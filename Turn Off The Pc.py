@@ -18,7 +18,7 @@ import tkinter.messagebox as msbox
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
-        self.title('Turn Off The PC')
+        self.title('ShutPC')
         width = (int(self.winfo_screenwidth()) // 2) - 255
         height = (int(self.winfo_screenheight()) // 2) - 200
         self.geometry(f'511x305+{width}+{height}') #320x240 #511x305
