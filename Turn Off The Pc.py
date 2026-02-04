@@ -22,7 +22,7 @@ class App(customtkinter.CTk):
         width = (int(self.winfo_screenwidth()) // 2) - 255
         height = (int(self.winfo_screenheight()) // 2) - 200
         self.geometry(f'511x360+{width}+{height}') #320x240 #511x305
-        self.resizable(True, True)
+        self.resizable(False, False)
         icon = resource_path('timer.ico')
         self.iconbitmap(icon)
   
@@ -38,21 +38,29 @@ class App(customtkinter.CTk):
 
         if not os.path.exists(config_path):
             with open(config_path, 'w', encoding = 'utf-8') as f:
-                f.write('ТМОГолубой')
+                f.write('600LТМОfГолубой')
 
 
 
         file = open('config.txt', 'r', encoding = 'utf-8')
         text = file.read()
-        
-        self.f_theme = text[0]
-        self.f_otk = text[1]
-        self.f_act = text[2]
-        self.color = text[3:]
+
+        L_index = int(text.index('L'))
+
+        self.f_theme = text[L_index + 1]
+        self.f_otk = text[L_index + 2]
+        self.f_act = text[L_index + 3]
+        self.f_cpu = text[L_index + 4]
+
+        self.f_time = text[0:L_index]
+
+        self.color = text[L_index + 5:]
         file.close()
         print(self.f_theme)
         print(self.f_otk)
         print(self.f_act)
+        print(self.f_cpu)
+        print(self.f_time)
         print(self.color)
 
         self.otkq = 60000
@@ -60,6 +68,8 @@ class App(customtkinter.CTk):
         def quit(event):
             self.destroy()
         self.bind('<Alt_L>', quit)
+
+
 
         def delay():
             
@@ -220,8 +230,13 @@ class App(customtkinter.CTk):
 
             self.act.place(x = 260, y = 130)
             self.label_act.place(x = 40, y = 130)
+            self.check_cpu.place(x = 385, y = 170)
 
             self.delay.place(x = 700, y = 100)
+            self.check_entry.place(x = 310, y = 210)
+
+            self.check_cpu_label.place(x = 40, y = 170)
+            self.entry_count_label.place(x = 40, y = 210)
 
             self.frame_3.place(x = 700, y = 600)
             self.frame_4.place(x = 0, y = 0)
@@ -268,6 +283,12 @@ class App(customtkinter.CTk):
             self.label_act.place(x = 700, y = 100)
             self.delay.place(x = 265, y = 300)
             self.under_delay.place(x = 250, y = 290)
+            self.check_cpu.place(x = 700, y = 100)
+
+            self.check_entry.place(x = 700, y = 100)
+
+            self.check_cpu_label.place(x = 700, y = 100)
+            self.entry_count_label.place(x = 700, y = 100)
 
             if self.otk_var.get() == 'Минутам':
                 self.hour_text.place(x = 104, y = 2)
@@ -316,6 +337,8 @@ class App(customtkinter.CTk):
             if value == 'Голубой':
                 # голубой: #346EBA  #3A5B87  #283F5E
 
+                self.check_cpu.configure(fg_color = '#346EBA', 
+                                     hover_color = '#3A5B87')
                 self.delay.configure(fg_color = '#346EBA',
                                      hover_color = '#3A5B87')
                 self.clear.configure(fg_color = '#346EBA',
@@ -352,6 +375,8 @@ class App(customtkinter.CTk):
             elif value == 'Красный':
                 # красный: #D65656  #B04C4C  #723131
 
+                self.check_cpu.configure(fg_color = '#D65656',
+                                     hover_color = '#B04C4C')
                 self.delay.configure(fg_color = '#D65656',
                                      hover_color = '#B04C4C')
                 self.clear.configure(fg_color = '#D65656',
@@ -388,6 +413,8 @@ class App(customtkinter.CTk):
             elif value == 'Зеленый':
                 # зеленый: #41904B  #407347  #315A37
 
+                self.check_cpu.configure(fg_color = '#41904B',
+                                     hover_color = '#407347')
                 self.delay.configure(fg_color = '#41904B',
                                      hover_color = '#407347')
                 self.clear.configure(fg_color = '#41904B',
@@ -424,6 +451,8 @@ class App(customtkinter.CTk):
             elif value == 'Оранжевый':
                 # оранжевый: #C4834D  #8F623C  #61432A
 
+                self.check_cpu.configure(fg_color = '#C4834D',
+                                     hover_color = '#8F623C')
                 self.delay.configure(fg_color = '#C4834D',
                                      hover_color = '#8F623C')
                 self.clear.configure(fg_color = '#C4834D',
@@ -460,6 +489,8 @@ class App(customtkinter.CTk):
             elif value == 'Фиолетовый':
                 # фиолетовый: #9250DE  #5B3982  #462B64
 
+                self.check_cpu.configure(fg_color = '#9250DE',
+                                     hover_color = '#5B3982')
                 self.delay.configure(fg_color = '#9250DE',
                                      hover_color = '#5B3982')
                 self.clear.configure(fg_color = '#9250DE',
@@ -525,14 +556,20 @@ class App(customtkinter.CTk):
             theme = self.theme_var.get()[0]
             otk = self.otk_var.get()[0]
             act = self.choise_act.get()[0]
+            cpu = self.check_var.get()[-1]
+            time = self.check_entry.get()
             color = self.color_var.get()
+            
 
             print('theme:', theme)  # Работает
             print('otk:', otk)  # Работает
             print('act:', act)  # 
+            print('cpu:', cpu)  #
+            print('time the load:', time) #
             print('color:', color)  # Работает
             
-            content = str(theme) + str(otk) + str(act) + str(color)
+
+            content = time + 'L' + str(theme) + str(otk) + str(act) + str(cpu) + str(color)
 
             filepath('config.txt', content)
 
@@ -556,6 +593,29 @@ class App(customtkinter.CTk):
 
   
 # напиши свитч с функцией автовыключения пк исходя из нагрузки пк на цп
+
+
+
+
+        self.check_var = customtkinter.StringVar(value = 'off')
+        self.check_cpu = customtkinter.CTkCheckBox(self,
+            corner_radius = 0, text = '',
+            onvalue = 'on', offvalue = 'off',
+            variable = self.check_var, 
+            command = self.check_values)
+        self.check_cpu.place(x = 700, y = 100)
+
+
+        self.check_cpu_label = customtkinter.CTkLabel(self,
+            text = 'Авто-гибернация:',
+            font = ('Arial', 19))
+        self.check_cpu_label.place(x = 700, y = 100)
+
+        self.entry_count_label = customtkinter.CTkLabel(self,
+            text = 'Секунд до авто-гибернации:',
+            font = ('Arial', 19))
+        self.check_cpu_label.place(x = 700, y = 100)
+
 
         self.label_act = customtkinter.CTkLabel(self,
             text = 'Действие:', 
@@ -754,6 +814,17 @@ class App(customtkinter.CTk):
         self.entry_hour.place(x = 55, y = 30)
         self.entry_hour.insert(0, '0')
 
+
+        self.check_entry = customtkinter.CTkEntry(self,
+            corner_radius = 0, justify = 'right',
+            width = 100, font = ('Arial', 23),
+            validate = 'key',
+            validatecommand = valid)
+        self.check_entry.place(x = 700, y = 100)
+        self.check_entry.insert(0, self.f_time)
+
+
+
         #hours --- Button()
         self.hour_minus_button = customtkinter.CTkButton(self,
             text = '-', font = ('Arial', 24), corner_radius = 0,  
@@ -818,34 +889,46 @@ class App(customtkinter.CTk):
             font = ('Arial', 15))
         self.time.place(x = 272, y = 0)
 
-        #invisible Entry() to stoping time
-        self.vis_entry = customtkinter.CTkEntry(self)
-        self.vis_entry.place(x = 10, y = 650)
 
         #invisible Entry() to stoping time
-        self.vis_entry_2 = customtkinter.CTkEntry(self)
-        self.vis_entry_2.place(x = 10, y = 690)
+        self.vis_entry = customtkinter.CTkEntry(self, width = 50)
+        self.vis_entry.place(x = 10, y = 450)
+
+        #invisible Entry() to stoping time
+        self.vis_entry_2 = customtkinter.CTkEntry(self, width = 50)
+        self.vis_entry_2.place(x = 10, y = 485)
 
         #designation hours
         self.vis_hour = customtkinter.CTkLabel(self, 
-            text = 'hour', font = ('Arial', 14))
-        self.vis_hour.place(x = 160, y = 650)
+            text = 'vis hour', font = ('Arial', 14))
+        self.vis_hour.place(x = 65, y = 450)
 
         #designation minuts
         self.vis_minut = customtkinter.CTkLabel(self,
-            text = 'minut', font = ('Arial', 14))
-        self.vis_minut.place(x = 160, y = 690)
+            text = 'vis minut', font = ('Arial', 14))
+        self.vis_minut.place(x = 65, y = 485)
 
-        self.en_h = customtkinter.CTkEntry(self)
-        self.en_h.place(x = 10, y = 630)
 
-        self.en_m = customtkinter.CTkEntry(self)
-        self.en_m.place(x = 10, y = 670)
+        self.en_h = customtkinter.CTkEntry(self, width = 50)
+        self.en_h.place(x = 150, y = 450)
+
+        self.en_m = customtkinter.CTkEntry(self, width = 50)
+        self.en_m.place(x = 150, y = 485)
+
+        self.vis_hour = customtkinter.CTkLabel(self, 
+            text = 'en h', font = ('Arial', 14))
+        self.vis_hour.place(x = 205, y = 450)
+
+        #designation minuts
+        self.vis_minut = customtkinter.CTkLabel(self,
+            text = 'en m', font = ('Arial', 14))
+        self.vis_minut.place(x = 205, y = 485)
 
 
         if self.color == 'Голубой':
                 # голубой: #346EBA  #3A5B87  #283F5E
-
+            self.check_cpu.configure(fg_color = '#346EBA', 
+                                     hover_color = '#3A5B87')
             self.delay.configure(fg_color = '#346EBA',
                                      hover_color = '#3A5B87')
             self.clear.configure(fg_color = '#346EBA',
@@ -882,6 +965,8 @@ class App(customtkinter.CTk):
         elif self.color == 'Красный':
                 # красный: #D65656  #B04C4C
 
+            self.check_cpu.configure(fg_color = '#D65656',
+                                     hover_color = '#B04C4C')
             self.delay.configure(fg_color = '#D65656',
                                      hover_color = '#B04C4C')
             self.clear.configure(fg_color = '#D65656',
@@ -918,6 +1003,8 @@ class App(customtkinter.CTk):
         elif self.color == 'Зеленый':
                 # зеленый: #41904B  #407347  #315A37
 
+            self.check_cpu.configure(fg_color = '#41904B',
+                                     hover_color = '#407347')
             self.delay.configure(fg_color = '#41904B',
                                      hover_color = '#407347')
             self.clear.configure(fg_color = '#41904B',
@@ -955,6 +1042,8 @@ class App(customtkinter.CTk):
         elif self.color == 'Оранжевый':
                 # оранжевый: #C4834D  #8F623C  #61432A
 
+            self.check_cpu.configure(fg_color = '#C4834D',
+                                     hover_color = '#8F623C')
             self.delay.configure(fg_color = '#C4834D',
                                      hover_color = '#8F623C')
             self.clear.configure(fg_color = '#C4834D',
@@ -992,6 +1081,8 @@ class App(customtkinter.CTk):
         elif self.color == 'Фиолетовый':
                 # фиолетовый: #9250DE  #5B3982  #462B64
 
+            self.check_cpu.configure(fg_color = '#9250DE',
+                                     hover_color = '#5B3982')
             self.delay.configure(fg_color = '#9250DE',
                                      hover_color = '#5B3982')
             self.clear.configure(fg_color = '#9250DE',
@@ -1078,14 +1169,18 @@ class App(customtkinter.CTk):
 
 
         if self.choise_act.get()[0] == 'Г':
-            print('Гибернация')
             self.command = 'shutdown /h'
         elif self.choise_act.get()[0] == 'О':
-            print('Отключение')
             self.command = 'shutdown /s /t 0'
         elif self.choise_act.get()[0] == 'П':
-            print('Перезагрузка')
             self.command = 'shutdown /r /t 0'
+
+        
+        if self.f_cpu == 'n':
+            self.check_var.set('on')
+            self.check_values()
+        elif self.f_cpu == 'f':
+            self.check_var.set('off')
 
 
         self.hour = 0
@@ -1093,26 +1188,104 @@ class App(customtkinter.CTk):
         self.star_time = False
         self.stop = 1
 
-        
+        self.stop_time_count = 0
+
+
+    def start_monitoring(self):
+        self.check_entry.configure(state = 'disabled')
+        if self.check_var.get() == 'on':
+            self.monitor_cpu = True
+            self.count_time = int(self.check_entry.get())
+            self.time_now = 0
+            self.cpu_check_start()
+
+        else:
+            self.stop_monitoring()
+
+    def stop_monitoring(self):
+        self.check_entry.configure(state = 'normal')
+        self.minitor_cpu = False
+        self.after_cancel(self.cpu_act)
+        self.cpu_act = None
+
+    def cpu_check_start(self):
+        cpu_load = psutil.cpu_percent()
+        if cpu_load < 1:
+            self.time_now += 1
+            print(f'Cpu load: {cpu_load}% | {self.time_now} seconds left')
+
+            if self.count_time - 60 == self.time_now:
+                msbox.showinfo('Оповещение', 'Осталась 1 минута!')
+            
+            if self.count_time - 30 == self.time_now:
+                msbox.showinfo('Оповещение', 'Осталось 30 секунд!')
+
+            if self.count_time - 10 == self.time_now:
+                msbox.showinfo('Оповещение', 'Осталось 10 секунд!')
+
+            if self.count_time - 5 == self.time_now:
+                msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
+
+            if self.time_now == self.count_time:
+                self.monitor_cpu = False
+                self.cpu_act = None
+                self.time_now = 0
+                self.shutdown()
+
+        else:
+            if self.time_now > 0:
+                self.time_now = 0
+
+        self.cpu_act = self.after(1000, self.cpu_check_start)
+
+    def shutdown(self):
+        print('Гибернация')
+        os.system('shutdown /h')
+
+    def check_values(self):
+        if self.check_var.get() == 'on':
+            print(f'Turn {self.check_var.get()} the processor load check')
+        else:
+            print(f'Disabling {self.check_var.get()} the processor load check')
+
+
+
+        if int(self.check_entry.get()) > 60:
+
+            if self.check_var.get() == 'on':
+                self.start_monitoring()
+
+            else:
+                self.stop_monitoring()
+
+        else:
+            self.check_entry.delete(0, 25)
+            self.check_entry.insert(0, 600)
+            self.check_var.set('off')
+
+
+
 # Функция для оставноки времени.Содержится 4 почти одинаковых блока кода,
 # каждый из которых нужен для воизбеждания багов и проблем в целом в работе
 # Например, отключаются кнопки интерфейса, когда время идет, 
 # тк при взаимодействии с ними могут время может остановиться, перетать идти и
 # и подобные проблемы. чтобы время продолжало идти после оставноки, использовалась
 # функция number(), которая просто ведет счет времени на экране
-
-
     def stoped(self):
+
+
         if self.otk_var.get() == 'Минутам':
             self.otkq = 60000
         elif self.otk_var.get() == 'Секундам':
             self.otkq = 1000
+
 
         if self.stop % 2 == 1:
             self.stop += 1
             self.star_time = False
 
             self.stop_b.configure(text = 'Возобновить')
+            self.check_cpu.configure(state = 'normal')
             self.clear.configure(state = 'normal')
             self.otk.configure(state = 'normal')
             self.entry_hour.configure(state = 'normal')
@@ -1139,7 +1312,7 @@ class App(customtkinter.CTk):
                 self.en_h.insert(0, entry_h)
                 self.en_m.insert(0, entry_m)
                 
-                tm.sleep(0.2)
+
 
                 if self.star_time:
                     if 0 < self.time_sum < 6001:
@@ -1212,7 +1385,6 @@ class App(customtkinter.CTk):
                 self.en_h.insert(0, entry_h)
                 self.en_m.insert(0, entry_m)
 
-                tm.sleep(0.2)
 
                 if self.star_time:
                     if 0 < self.time_sum < 6001:
@@ -1274,13 +1446,21 @@ class App(customtkinter.CTk):
                             
                         elif self.time_sum == 5:
                             msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
-  
+
 
         elif self.stop % 2 == 0:
             self.stop -= 1
             self.star_time = True
 
             self.stop_b.configure(text = 'Остановить')
+
+            if self.check_var.get() == 'on':
+                self.stop_monitoring()
+                self.check_var.set('off')
+            else:
+                pass
+            self.check_cpu.configure(state = 'disabled')
+
             self.delay.configure(state = 'normal')
             self.clear.configure(state = 'disabled')
             self.otk.configure(state = 'disabled')
@@ -1307,7 +1487,6 @@ class App(customtkinter.CTk):
                 self.en_h.insert(0, entry_h)
                 self.en_m.insert(0, entry_m)
 
-                tm.sleep(0.2)
 
                 if self.star_time:
                     if 0 < self.time_sum < 6001:
@@ -1343,6 +1522,7 @@ class App(customtkinter.CTk):
                         self.time_out_h.configure(text = '00')
                         self.time_out_m.configure(text = '00')
                         self.stop_b.configure(text = 'Возобновить')
+                        self.check_cpu.configure(state = 'normal')
                         self.delay.configure(state = 'disabled')
                         self.otk.configure(state = 'normal')
                         self.entry_hour.configure(state = 'normal')
@@ -1390,7 +1570,6 @@ class App(customtkinter.CTk):
                 self.en_h.insert(0, entry_h)
                 self.en_m.insert(0, entry_m)
 
-                tm.sleep(0.2)
 
                 if self.star_time:
                     if 0 < self.time_sum < 6001:
@@ -1426,6 +1605,7 @@ class App(customtkinter.CTk):
                         self.time_out_h.configure(text = '00')
                         self.time_out_m.configure(text = '00')
                         self.stop_b.configure(text = 'Возобновить')
+                        self.check_cpu.configure(state = 'normal')
                         self.otk.configure(state = 'normal')
                         self.entry_hour.configure(state = 'normal')
                         self.entry_minut.configure(state = 'normal')
@@ -1464,6 +1644,15 @@ class App(customtkinter.CTk):
                         elif self.time_sum == 5:
                             msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
 
+        
+
+
+    # def start_but(self):
+
+# Разбей функцию stoped() на несколько других функций для более широкой настройки
+
+
+
 # Функция служит для передачи времени из полей ввода Часов и Минут, также 
 # требуется для отключений виджетов интерфейса для воизбежания багов
 # Функция принимает на вход часы и минуты, переводит в минуты и дальше 
@@ -1476,6 +1665,14 @@ class App(customtkinter.CTk):
         text = int(self.entry_hour.get()) + int(self.entry_minut.get())
         if not self.star_time:
             if 0 < int(text) < 6001:
+                self.check_cpu.configure(state = 'disabled')
+
+                if self.check_var.get() == 'on':
+                    self.stop_monitoring()
+                    self.check_var.set('off')
+                elif self.check_var.get() == 'off':
+                    pass
+
                 self.str_b.configure(state = 'disabled')
                 self.stop_b.configure(state = 'normal')
                 self.delay.configure(state = 'normal')
@@ -1516,6 +1713,7 @@ class App(customtkinter.CTk):
                 self.time_out_h.configure(text = '00')
                 self.time_out_m.configure(text = '00')
                 self.stop_b.configure(text = 'Возобновить')
+                self.check_cpu.configure(state = 'normal')
                 self.delay.configure(state = 'disabled')
                 self.otk.configure(state = 'normal')
                 print('st) The input field "entry_hour" and "entry_minut" is cleared')
@@ -1563,6 +1761,7 @@ class App(customtkinter.CTk):
                     self.time_out_h.configure(text = '00')
                     self.time_out_m.configure(text = '00')
                     self.stop_b.configure(text = 'Возобновить')
+                    self.check_cpu.configure(state = 'normal')
                     self.delay.configure(state = 'disabled')
                     self.otk.configure(state = 'normal')
                     self.entry_hour.configure(state = 'normal')
@@ -1622,4 +1821,3 @@ class App(customtkinter.CTk):
 
 app = App()
 app.mainloop()
-
