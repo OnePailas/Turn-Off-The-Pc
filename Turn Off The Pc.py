@@ -1210,7 +1210,7 @@ class App(customtkinter.CTk):
 
     def cpu_check_start(self):
         cpu_load = psutil.cpu_percent()
-        if cpu_load < 1:
+        if cpu_load <= 2:
             self.time_now += 1
             print(f'Cpu load: {cpu_load}% | {self.time_now} seconds left')
 
