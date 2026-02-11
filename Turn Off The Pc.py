@@ -1192,6 +1192,17 @@ class App(customtkinter.CTk):
 
 
     def start_monitoring(self):
+        try:
+            time_value = int(self.check_entry.get())
+            if time_value < 60:
+                msbox.showwarning('Предупреждение', 'Минимальное время - 60 секунд')
+                self.check_var.set('off')
+                return
+        except ValueError:
+            msbox.showwarning('Ошибка', 'Введите число')
+            self.check_var.set('off')
+            return
+
         self.check_entry.configure(state = 'disabled')
         if self.check_var.get() == 'on':
             self.monitor_cpu = True
@@ -1210,21 +1221,10 @@ class App(customtkinter.CTk):
 
     def cpu_check_start(self):
         cpu_load = psutil.cpu_percent()
-        if cpu_load <= 2:
+        if cpu_load < 13:
             self.time_now += 1
             print(f'Cpu load: {cpu_load}% | {self.time_now} seconds left')
 
-            if self.count_time - 60 == self.time_now:
-                msbox.showinfo('Оповещение', 'Осталась 1 минута!')
-            
-            if self.count_time - 30 == self.time_now:
-                msbox.showinfo('Оповещение', 'Осталось 30 секунд!')
-
-            if self.count_time - 10 == self.time_now:
-                msbox.showinfo('Оповещение', 'Осталось 10 секунд!')
-
-            if self.count_time - 5 == self.time_now:
-                msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
 
             if self.time_now == self.count_time:
                 self.monitor_cpu = False
@@ -1248,20 +1248,12 @@ class App(customtkinter.CTk):
         else:
             print(f'Disabling {self.check_var.get()} the processor load check')
 
-
-
-        if int(self.check_entry.get()) > 60:
-
-            if self.check_var.get() == 'on':
-                self.start_monitoring()
-
-            else:
+        if self.check_var.get() == 'on':
+            self.start_monitoring()
+        else:
                 self.stop_monitoring()
 
-        else:
-            self.check_entry.delete(0, 25)
-            self.check_entry.insert(0, 600)
-            self.check_var.set('off')
+
 
 
 
