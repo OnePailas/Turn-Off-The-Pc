@@ -1,6 +1,11 @@
 import os
 import sys
 import psutil
+import time as tm
+import customtkinter
+import tkinter.messagebox as msbox
+from PIL import Image, ImageTk
+
 
 def resource_path(rel_path):
     try:
@@ -10,24 +15,25 @@ def resource_path(rel_path):
 
     return os.path.join(base_path, rel_path)
 
-import customtkinter
-from PIL import Image, ImageTk
-import time as tm
-import tkinter.messagebox as msbox
 
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
+
+        # Название, размеры, иконка
         self.title('ShutPC')
+        
         width = (int(self.winfo_screenwidth()) // 2) - 255
         height = (int(self.winfo_screenheight()) // 2) - 200
+        
         self.geometry(f'511x360+{width}+{height}') #320x240 #511x305
         self.resizable(False, False)
+        
         icon = resource_path('timer.ico')
         self.iconbitmap(icon)
   
 
-        
+        # Автоматическое создание конфига в случае отсутствия
         if getattr(sys, 'frozen', False):
             applic_path = os.path.dirname(sys.executable)
 
@@ -41,153 +47,192 @@ class App(customtkinter.CTk):
                 f.write('600LТМОfГолубой')
 
 
-
+        # Открытие файла для извлечения настроек
         file = open('config.txt', 'r', encoding = 'utf-8')
         text = file.read()
 
+        # Знак разделителя для извлечения настроек 
         L_index = int(text.index('L'))
 
-        self.f_theme = text[L_index + 1]
-        self.f_otk = text[L_index + 2]
-        self.f_act = text[L_index + 3]
-        self.f_cpu = text[L_index + 4]
 
-        self.f_time = text[0:L_index]
+        self.open_file_optionmenu_mode_themes_ui = text[L_index + 1]
+        self.open_file_optionmenu_mode_color_ui = text[L_index + 5:]
+        self.open_file_optionmenu_mode_countdown_time = text[L_index + 2]
+        
+        self.open_file_optionmenu_mode_act = text[L_index + 3]
+        self.open_file_checkbox_mode_auto_hibernation = text[L_index + 4]
+        self.open_file_entry_time_for_auto_hibernation = text[0:L_index]
 
-        self.color = text[L_index + 5:]
         file.close()
-        print(self.f_theme)
-        print(self.f_otk)
-        print(self.f_act)
-        print(self.f_cpu)
-        print(self.f_time)
-        print(self.color)
+        
+        print(self.open_file_optionmenu_mode_themes_ui)
+        print(self.open_file_optionmenu_mode_color_ui)
+        print(self.open_file_optionmenu_mode_countdown_time)
+        print(self.open_file_optionmenu_mode_act)
+        print(self.open_file_checkbox_mode_auto_hibernation)
+        print(self.open_file_entry_time_for_auto_hibernation)
 
-        self.otkq = 60000
+        self.value_for_countwond_times = 60000
 
+
+        open_image_for_open_settings = Image.open(resource_path('settings.png'))
+        image_open_settings = ImageTk.PhotoImage(open_image_for_open_settings)
+
+        open_image_for_shut_settings = Image.open(resource_path('close.png'))
+        image_shut_settings = ImageTk.PhotoImage(open_image_for_shut_settings)
+
+        open_image_for_save_settings = Image.open(resource_path('save.png'))
+        image_save_settigs = ImageTk.PhotoImage(open_image_for_save_settings)
+
+
+        # Функция для закрытия приложения через сочетание клавиш "Ctrl + Q"
         def quit(event):
             self.destroy()
-        self.bind('<Alt_L>', quit)
+        self.bind('<Control-Key-q>', quit)
 
 
-
-        def delay():
+        def function_delay_time():
             
-            if self.otk_var.get()[0] == 'М':
-                if self.time_sum < 5993:
+            if self.value_optionmenu_mode_countdown_time.get()[0] == 'М':
+                
+                if self.summa_hours_and_minuts_for_convetison_in_minuts < 5993:
 
-                    self.time_sum += 5
-                    hour = str(self.time_sum // 60)
-                    minut = str(self.time_sum % 60)
+                    self.summa_hours_and_minuts_for_convetison_in_minuts += 5
+                    
+                    hours = str(self.summa_hours_and_minuts_for_convetison_in_minuts // 60)
+                    minuts= str(self.summa_hours_and_minuts_for_convetison_in_minuts % 60)
 
 
-                    if len(hour) == 1 and len(minut) == 1:
-                        self.time_out_h.configure(text = f'0{hour}')
-                        self.time_out_m.configure(text = f'0{minut}')
-                    elif len(hour) == 1 and len(minut) != 1:
-                        self.time_out_h.configure(text = f'0{hour}')
-                        self.time_out_m.configure(text = minut)
-                    elif len(hour) != 1 and len(minut) == 1:
-                        self.time_out_h.configure(text = hour)
-                        self.time_out_m.configure(text = f'0{minut}')
+                    if len(hours) == 1 and len(minuts) == 1:
+                        self.label_title_count_time_hours.configure(text = f'0{hours}')
+                        self.label_title_count_time_minuts.configure(text = f'0{minuts}')
+                        
+                    elif len(hours) == 1 and len(minuts) != 1:
+                        self.label_title_count_time_hours.configure(text = f'0{hours}')
+                        self.label_title_count_time_minuts.configure(text = minuts)
+                        
+                    elif len(hours) != 1 and len(minuts) == 1:
+                        self.label_title_count_time_hours.configure(text = hours)
+                        self.label_title_count_time_minuts.configure(text = f'0{minuts}')
+                        
                     else:
-                        self.time_out_h.configure(text = hour)
-                        self.time_out_m.configure(text = minut)
+                        self.label_title_count_time_hours.configure(text = hours)
+                        self.label_title_count_time_minuts.configure(text = minuts)
+
+                    plus_minuts = int(self.entry_title_accept_minuts.get()) + 6
 
 
-                    plus_minut = int(self.entry_minut.get()) + 6
+                    if int(self.entry_title_accept_minuts.get()) < 55:
 
-                    if int(self.entry_minut.get()) < 55:
+                        self.entry_title_accept_minuts.delete(0, 25)
+                        self.entry_title_accept_minuts.insert(0, plus_minuts - 1)
 
-                        self.entry_minut.delete(0, 25)
-                        self.entry_minut.insert(0, plus_minut - 1)
-
-                        self.en_m.delete(0, 25)
-                        self.en_m.insert(0, plus_minut - 1)
+                        self.entry_under_title_for_function_stop_time_minuts.delete(0, 25)
+                        self.entry_under_title_for_function_stop_time_minuts.insert(0, plus_minuts - 1)
                         tm.sleep(0.2)
                     
-                    elif int(self.entry_minut.get()) > 55:
+                    
+                    elif int(self.entry_title_accept_minuts.get()) > 55:
                         
-                        delay_h = int(self.entry_hour.get()) + 1
-                        delay_m = 60 - int(self.entry_minut.get()) 
+                        delay_h = int(self.entry_title_accept_hours.get()) + 1
+                        delay_m = 60 - int(self.entry_title_accept_minuts.get()) 
 
                         if len(str(delay_h)) == 1:
-                            self.entry_hour.delete(0, 25)
-                            self.entry_hour.insert(0, delay_h)
-                            self.entry_minut.delete(0, 25)
-                            self.entry_minut.insert(0, delay_m)
+                            self.entry_title_accept_hours.delete(0, 25)
+                            self.entry_title_accept_hours.insert(0, delay_h)
+                            self.entry_title_accept_minuts.delete(0, 25)
+                            self.entry_title_accept_minuts.insert(0, delay_m)
+                            
                         elif len(str(delay_h)) != 1:
-                            self.entry_hour.delete(0, 25)
-                            self.entry_hour.insert(0, delay_h)
-                            self.entry_minut.deelte(0, 25)
-                            self.entry_minut.insert(0, delay_m)
-
-                    elif int(self.entry_minut.get()) == 55:
-
-                        delay_h = int(self.entry_hour.get())
-                        self.entry_hour.delete(0, 25)
-                        self.entry_hour.insert(0, delay_h + 1)
-                        self.entry_minut.delete(0, 25)
-                        self.entry_minut.insert(0, '0')
+                            self.entry_title_accept_hours.delete(0, 25)
+                            self.entry_title_accept_hours.insert(0, delay_h)
+                            self.entry_title_accept_minuts.deelte(0, 25)
+                            self.entry_title_accept_minuts.insert(0, delay_m)
 
 
+                    elif int(self.entry_title_accept_minuts.get()) == 55:
+
+                        delay_h = int(self.entry_title_accept_hours.get())
+                        
+                        self.entry_title_accept_hours.delete(0, 25)
+                        self.entry_title_accept_hours.insert(0, delay_h + 1)
+                        self.entry_title_accept_minuts.delete(0, 25)
+                        self.entry_title_accept_minuts.insert(0, '0')
 
 
-            elif self.otk_var.get()[0] == 'С':
-                if self.time_sum < 5699:
+
+
+            elif self.value_optionmenu_mode_countdown_time.get()[0] == 'С':
+                
+                if self.summa_hours_and_minuts_for_convetison_in_minuts < 5699:
                     
-                    self.time_sum += 300
-                    plus_second = int(self.entry_hour.get()) + 5
-                    self.entry_hour.delete(0, 25)
-                    self.entry_hour.insert(0, plus_second)
-
-                    self.en_h.delete(0, 25)
-                    self.en_h.insert(0, plus_second)
+                    self.summa_hours_and_minuts_for_convetison_in_minuts += 300
+                    plus_seconds = int(self.entry_title_accept_hours.get()) + 5
+                    
+                    self.entry_title_accept_hours.delete(0, 25)
+                    self.entry_title_accept_hours.insert(0, plus_seconds)
+                    self.entry_under_title_for_function_stop_time_hours.delete(0, 25)
+                    self.entry_under_title_for_function_stop_time_hours.insert(0, plus_seconds)
+                    
                     tm.sleep(0.2)
 
-        def clear():
-            self.entry_hour.delete(0, 25)
-            self.entry_minut.delete(0 ,25)
-            self.entry_hour.insert(0, 0)
-            self.entry_minut.insert(0, 0)
-            self.time_out_h.configure(text = '00')
-            self.time_out_m.configure(text = '00')
+
+        def function_clear_time():
+            self.entry_title_accept_hours.delete(0, 25)
+            self.entry_title_accept_minuts.delete(0 ,25)
+            self.entry_title_accept_hours.insert(0, 0)
+            self.entry_title_accept_minuts.insert(0, 0)
+            self.label_title_count_time_hours.configure(text = '00')
+            self.label_title_count_time_minuts.configure(text = '00')
+
 
         def hour_minus():
-            hour_m = int(self.entry_hour.get()) - 1
-            if 0 <= hour_m < 100:
-                self.entry_hour.delete(0, 20)
-                self.entry_hour.insert(0, hour_m)
+            hours_minus = int(self.entry_title_accept_hours.get()) - 1
+            
+            if 0 <= hours_minus < 100:
+                self.entry_title_accept_hours.delete(0, 20)
+                self.entry_title_accept_hours.insert(0, hours_minus)
+                
             else:
-                self.entry_hour.insert(0, '')
+                self.entry_title_accept_hours.insert(0, '')
+
 
         def hour_plus():
-            hour_p  = int(self.entry_hour.get()) + 1
-            if 0 < hour_p <= 99:
-                self.entry_hour.delete(0, 20)
-                self.entry_hour.insert(0, hour_p)
+            hours_plus  = int(self.entry_title_accept_hours.get()) + 1
+            
+            if 0 < hours_plus < 100:
+                self.entry_title_accept_hours.delete(0, 20)
+                self.entry_title_accept_hours.insert(0, hours_plus)
+                
             else:
-                self.entry_hour.insert(0, '')
+                self.entry_title_accept_hours.insert(0, '')
+
 
         def minut_minus():
-            minut_m = int(self.entry_minut.get()) - 1
-            if 0 <= minut_m < 100:
-                self.entry_minut.delete(0, 20)
-                self.entry_minut.insert(0, minut_m)
+            minuts_minus = int(self.entry_title_accept_minuts.get()) - 1
+            
+            if 0 <= minuts_minus < 100:
+                self.entry_title_accept_minuts.delete(0, 20)
+                self.entry_title_accept_minuts.insert(0, minuts_minus)
+                
             else:
-                self.entry_minut.insert(0, '')
+                self.entry_title_accept_minuts.insert(0, '')
+
 
         def minut_plus():
-            minut_p = int(self.entry_minut.get()) + 1
-            sum = int(self.entry_hour.get()) + int(self.entry_minut.get())
+            minusts_plus = int(self.entry_title_accept_minuts.get()) + 1
+            sum = int(self.entry_title_accept_hours.get()) + int(self.entry_title_accept_minuts.get())
 
-            if int(self.entry_hour.get()) >= 99 and minut_p == 61:
-                self.entry_minut.insert(0, '')
-            elif int(self.entry_hour.get()) <= 99 and 0 < minut_p <= 99:
-                self.entry_minut.delete(0, 20)
-                self.entry_minut.insert(0, minut_p) 
+            if int(self.entry_title_accept_hours.get()) == 99 and minusts_plus == 61:
+                self.entry_title_accept_minuts.insert(0, '')
+                
+            elif int(self.entry_title_accept_hours.get()) <= 99 and 0 < minusts_plus <= 99:
+                self.entry_title_accept_minuts.delete(0, 20)
+                self.entry_title_accept_minuts.insert(0, minusts_plus)
+                
             else:
-                self.entry_minut.insert(0, '')
+                self.entry_title_accept_minuts.insert(0, '')
+
 
         def validate(text):
             if text.isdigit() or text == '':
@@ -195,353 +240,359 @@ class App(customtkinter.CTk):
             else:
                 return False
 
-        def sett():
-            self.clear.place(x = 600, y = 600)
-            self.setings_b.place(x = 600, y = 600) # 455 0
-            self.close.place(x = 455, y = 0) # 700 100
-            self.save.place(x = 455, y = 56) # 700 100
 
-            self.str_b.place(x = 600, y = 600) # 15 155
-            self.stop_b.place(x = 600, y = 600) # 15 240
-            self.hour_minus_button.place(x = 600, y = 600) # 15 30
-            self.hour_plus_button.place(x = 600, y = 600) # 205 30
-            self.minut_minus_button.place(x = 600, y = 600) # 15 100
-            self.minut_plus_button.place(x = 600, y = 600) # 205 100
-            self.entry_hour.place(x = 600, y = 600) # 55 30
-            self.entry_minut.place(x = 600, y = 600) # 55 100
-            self.hour_text.place(x = 600, y = 600) # 104 2
-            self.minut_text.place(x = 600, y = 600) # 92 72 
-            self.time_out_h.place(x = 600, y = 600) # 279 10
-            self.time_out_m.place(x = 600, y = 600) # 279 145
-            self.time.place(x = 600, y = 600) # 272 0
-            self.hour_t.place(x = 700, y = 700) # 435 119
-            self.minut_t.place(x = 600,  y = 600) # 435 254
-            self.frame_2.place(x = 600, y = 600) # 0 0
-            self.frame_1.place(x = 600, y = 600)
+        def function_open_settings():
+            self.frame_title_background_left_side.place(x = 600, y = 600)
+            self.frame_title_background_delay.place(x = 700, y = 100)
+            self.frame_settings_background_under_button_settings.place(x = 600, y = 600)
+            self.frame_settings_background_left_side.place(x = 0, y = 0)
+            self.frame_settings_background_right_side.place(x = 426, y = 0)    
+            self.frame_settins_background_under_button_settings.place(x = 455, y = 0)      
 
-            self.option_themes.place(x = 260, y = 10) # 700 100
-            self.themes.place(x = 40, y = 10) # 700 100
 
-            self.option_colors.place(x = 260, y = 50) # 700 100
-            self.colors.place(x = 40, y = 50)
+            self.label_title_designation_hours.place(x = 600, y = 600)
+            self.label_title_designaton_minuts.place(x = 600, y = 600)
+            self.label_title_time_out_through.place(x = 600, y = 600)
+            self.label_title_count_time_hours.place(x = 600, y = 600)
+            self.label_title_count_time_minuts.place(x = 600, y = 600)
+            self.label_title_unit_time_hours.place(x = 700, y = 700)
+            self.label_title_unit_time_minuts.place(x = 600,  y = 600)
+            self.label_settings_choise_themes_ui.place(x = 40, y = 10)
+            self.label_settings_choise_color_ui.place(x = 40, y = 50)
+            self.label_settings_choise_countdown_time.place(x = 40, y = 90)
+            # self.label_settings_choise_font_ui.place(x = 40, y = 250)
+            self.label_settings_time_for_auto_hibernation.place(x = 40, y = 210)
+            self.label_settings_choise_act_after_time.place(x = 40, y = 130)
+            self.label_settings_state_auto_hibernation.place(x = 40, y = 170)
 
-            self.otk.place(x = 260, y = 90)
-            self.otk_text.place(x = 40, y = 90)
 
-            self.act.place(x = 260, y = 130)
-            self.label_act.place(x = 40, y = 130)
-            self.check_cpu.place(x = 385, y = 170)
+            self.button_title_start_time.place(x = 600, y = 600)
+            self.button_title_stop_time.place(x = 600, y = 600)
+            self.button_title_minus_hour.place(x = 600, y = 600)
+            self.button_title_plus_hour.place(x = 600, y = 600)
+            self.button_title_minus_minut.place(x = 600, y = 600)
+            self.button_title_plus_minut.place(x = 600, y = 600)
+            self.button_title_delay_time.place(x = 700, y = 100)
+            self.button_title_clear_time.place(x = 600, y = 600)
+            self.button_settings_open_page_settings.place(x = 600, y = 600)
+            self.button_settings_shut_page_settings.place(x = 455, y = 0)
+            self.button_settings_save_settings.place(x = 455, y = 56)
 
-            self.delay.place(x = 700, y = 100)
-            self.check_entry.place(x = 310, y = 210)
 
-            self.check_cpu_label.place(x = 40, y = 170)
-            self.entry_count_label.place(x = 40, y = 210)
+            self.entry_title_accept_hours.place(x = 600, y = 600)
+            self.entry_title_accept_minuts.place(x = 600, y = 600)
+            self.entry_settings_auto_shutdown.place(x = 310, y = 210)
 
-            self.frame_3.place(x = 700, y = 600)
-            self.frame_4.place(x = 0, y = 0)
-            self.frame_5.place(x = 426, y = 0)            
-            self.frame_6.place(x = 455, y = 0)
-            self.under_delay.place(x = 700, y = 100)
-            
 
-        def close():
-            self.clear.place(x = 15, y = 300)
-            self.setings_b.place(x = 455, y = 0)
-            self.close.place(x = 700, y = 100)
-            self.save.place(x = 700, y = 100)
+            self.optionmenu_settings_mode_themes_ui.place(x = 260, y = 10)
+            self.optionmenu_settings_mode_color_ui.place(x = 260, y = 50)
+            self.optionmenu_settings_mode_countdown_time.place(x = 260, y = 90)
+            self.optionmenu_settings_mode_act_after_time.place(x = 260, y = 130)
 
-            self.str_b.place(x = 15, y = 155)
-            self.stop_b.place(x = 15, y = 240)
-            self.hour_minus_button.place(x = 15, y = 30)
-            self.hour_plus_button.place(x = 205, y = 30)
-            self.minut_minus_button.place(x = 15, y = 100)
-            self.minut_plus_button.place(x = 205, y = 100)
-            self.entry_hour.place(x = 55, y = 30)
-            self.entry_minut.place(x = 55, y = 100)
-            self.hour_text.place(x = 104, y = 2)
-            self.minut_text.place(x = 92, y = 72)
-            self.time_out_h.place(x = 279, y = 10)
-            self.time_out_m.place(x = 279, y = 145)
-            self.time.place(x = 272, y = 0)
-            self.hour_t.place(x = 435, y = 119)
-            self.minut_t.place(x = 435, y = 254)
-            self.frame_2.place(x = 0, y = 0)
 
-            self.themes.place(x = 700, y = 100)
-            self.option_themes.place(x = 700, y = 100)
-            self.colors.place(x = 700, y = 100)
-            self.option_colors.place(x = 700, y = 100)
-            self.otk.place(x = 700, y = 100)
-            self.otk_text.place(x = 700, y = 100)
-            self.frame_1.place(x = 455, y = 0)
-            self.frame_3.place(x = 700, y = 100)
-            self.frame_4.place(x = 700, y = 600)
-            self.frame_6.place(x = 700, y = 600)
-            self.frame_5.place(x = 700, y = 600)
-            self.act.place(x = 700, y = 100)
-            self.label_act.place(x = 700, y = 100)
-            self.delay.place(x = 265, y = 300)
-            self.under_delay.place(x = 250, y = 290)
-            self.check_cpu.place(x = 700, y = 100)
+            self.checkbox_settings_mode_auto_hibernation.place(x = 385, y = 170)
 
-            self.check_entry.place(x = 700, y = 100)
 
-            self.check_cpu_label.place(x = 700, y = 100)
-            self.entry_count_label.place(x = 700, y = 100)
+        def function_shut_settings():
+            self.frame_title_background_left_side.place(x = 0, y = 0)
+            self.frame_title_background_delay.place(x = 250, y = 290)
+            self.frame_settings_background_under_button_settings.place(x = 455, y = 0)
+            self.frame_settings_background_left_side.place(x = 1150, y = 10)
+            self.frame_settings_background_right_side.place(x = 1200, y = 10)
+            self.frame_settins_background_under_button_settings.place(x = 1250, y = 10)
 
-            if self.otk_var.get() == 'Минутам':
-                self.hour_text.place(x = 104, y = 2)
-                self.minut_text.place(x = 92, y = 72)
+
+            self.label_title_designation_hours.place(x = 104, y = 2)
+            self.label_title_designaton_minuts.place(x = 92, y = 72)
+            self.label_title_time_out_through.place(x = 272, y = 0)
+            self.label_title_count_time_hours.place(x = 279, y = 10)
+            self.label_title_count_time_minuts.place(x = 279, y = 145)
+            self.label_title_unit_time_hours.place(x = 435, y = 119)
+            self.label_title_unit_time_minuts.place(x = 435, y = 254)
+            self.label_settings_choise_themes_ui.place(x = 700, y = 100)
+            self.label_settings_choise_color_ui.place(x = 700, y = 170)
+            self.label_settings_choise_countdown_time.place(x = 700, y = 130)
+            # self.label_settings_choise_font_ui.place(x = 700, y = 100)
+            self.label_settings_time_for_auto_hibernation.place(x = 700, y = 40)
+            self.label_settings_choise_act_after_time.place(x = 700, y = 70)
+            self.label_settings_state_auto_hibernation.place(x = 700, y = 10)
+
+
+            self.button_title_start_time.place(x = 15, y = 155)
+            self.button_title_stop_time.place(x = 15, y = 240)
+            self.button_title_minus_hour.place(x = 15, y = 30)
+            self.button_title_plus_hour.place(x = 205, y = 30)
+            self.button_title_minus_minut.place(x = 15, y = 100)
+            self.button_title_plus_minut.place(x = 205, y = 100)
+            self.button_title_delay_time.place(x = 265, y = 300)
+            self.button_title_clear_time.place(x = 15, y = 300)
+            self.button_settings_open_page_settings.place(x = 455, y = 0)
+            self.button_settings_shut_page_settings.place(x = 1350, y = 10)
+            self.button_settings_save_settings.place(x = 1350, y = 80)
+
+
+            self.entry_title_accept_hours.place(x = 55, y = 30)
+            self.entry_title_accept_minuts.place(x = 55, y = 100)
+            self.entry_settings_auto_shutdown.place(x = 1000, y = 10)
+
+
+            self.optionmenu_settings_mode_themes_ui.place(x = 700, y = 250)
+            self.optionmenu_settings_mode_color_ui.place(x = 700, y = 300)
+            self.optionmenu_settings_mode_countdown_time.place(x = 700, y = 350)
+            self.optionmenu_settings_mode_act_after_time.place(x = 700, y = 400)
+
+
+            self.checkbox_settings_mode_auto_hibernation.place(x = 600, y = 10)
+
+
+            if self.value_optionmenu_mode_countdown_time.get() == 'Минутам':
+                self.label_title_designation_hours.place(x = 104, y = 2)
+                self.label_title_designaton_minuts.place(x = 92, y = 72)
             else:
-                self.hour_text.place(x = 92, y = 2)
-                self.minut_text.place(x = 89, y = 72)
+                self.label_title_designation_hours.place(x = 92, y = 2)
+                self.label_title_designaton_minuts.place(x = 89, y = 72)
 
-        def option_themes(value):
-            print('value:', value)
 
+        def function_choise_themes_ui(value):
             if value == 'Темная':
                 customtkinter.set_appearance_mode('Dark')
-                self.frame_1.configure(fg_color = '#2E2E2E')
-                self.frame_2.configure(fg_color = '#2E2E2E')
-                self.frame_3.configure(fg_color = '#2E2E2E')
-                self.frame_4.configure(fg_color = '#2E2E2E')
-                self.frame_5.configure(fg_color = '#2E2E2E')
-                self.hour_text.configure(fg_color = '#2E2E2E')
-                self.minut_text.configure(fg_color = '#2E2E2E')
-                self.under_delay.configure(fg_color = '#2E2E2E')
 
+                self.frame_title_background_left_side.configure(fg_color = '#2E2E2E')
+                self.frame_title_background_delay.configure(fg_color = '#2E2E2E')
+                self.frame_settings_background_under_button_settings.configure(fg_color = '#2E2E2E')
+                self.frame_settings_background_left_side.configure(fg_color = '#2E2E2E')
+                self.frame_settings_background_right_side.configure(fg_color = '#2E2E2E')
+
+                self.label_title_designation_hours.configure(fg_color = '#2E2E2E')
+                self.label_title_designaton_minuts.configure(fg_color = '#2E2E2E')
 
             elif value == 'Светлая':
                 customtkinter.set_appearance_mode('Light')
-                self.frame_1.configure(fg_color = '#D6D6D6')
-                self.frame_2.configure(fg_color = '#D6D6D6')
-                self.frame_3.configure(fg_color = '#D6D6D6')
-                self.frame_4.configure(fg_color = '#D6D6D6')
-                self.frame_5.configure(fg_color = '#D6D6D6')
-                self.hour_text.configure(fg_color = '#D6D6D6')
-                self.minut_text.configure(fg_color = '#D6D6D6')
-                self.under_delay.configure(fg_color = '#D6D6D6')
+
+                self.frame_title_background_delay.configure(fg_color = '#D6D6D6')
+                self.frame_title_background_left_side.configure(fg_color = '#D6D6D6')
+                self.frame_settings_background_under_button_settings.configure(fg_color = '#D6D6D6')
+                self.frame_settings_background_left_side.configure(fg_color = '#D6D6D6')
+                self.frame_settings_background_right_side.configure(fg_color = '#D6D6D6')
+
+                self.label_title_designation_hours.configure(fg_color = '#D6D6D6')
+                self.label_title_designaton_minuts.configure(fg_color = '#D6D6D6')
 
 
-        def option_colors(value):
-            print('value:', value)
+        def function_choise_color_ui(value):
+            # голубой:    #346EBA  #3A5B87  #283F5E
+            # красный:    #FF4242  #B04C4C  #723131
+            # зеленый:    #52D163  #4E9158  #315A37
+            # оранжевый:  #DB9960  #8F623C  #61432A
+            # фиолетовый: #5B3982  #9250DE  #462B64
 
-# голубой: #346EBA  #3A5B87  #283F5E
-# голубой: #346EBA  #3A5B87  
-# красный: #FF4242  #B04C4C
-# зеленый: #52D163  #4E9158
-# оранжевый: #DB9960  #8F623C
-# фиолетовый: #5B3982  #9250DE
-
+            # fg_color - отображаемый цвет
+            # hover_color - цвет при наведении
             if value == 'Голубой':
-                # голубой: #346EBA  #3A5B87  #283F5E
 
-                self.check_cpu.configure(fg_color = '#346EBA', 
-                                     hover_color = '#3A5B87')
-                self.delay.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.clear.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.frame_6.configure(fg_color = '#283F5E')
-                self.str_b.configure(fg_color = '#346EBA',    # цвет в целом
-                                     hover_color = '#3A5B87') # цвет при наведении
-                
-                self.stop_b.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.hour_minus_button.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.hour_plus_button.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.minut_minus_button.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.minut_plus_button.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.setings_b.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.close.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.save.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-                self.option_themes.configure(fg_color = '#346EBA', 
-                    button_color = '#346EBA', button_hover_color = '#3A5B87')
-                self.option_colors.configure(fg_color = '#346EBA', 
-                    button_color = '#346EBA', button_hover_color = '#3A5B87')
-                self.otk.configure(fg_color = '#346EBA', 
-                    button_color = '#346EBA', button_hover_color = '#3A5B87')
-                self.act.configure(fg_color = '#346EBA', 
-                    button_color = '#346EBA', button_hover_color = '#3A5B87')
-                
+                self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_title_delay_time.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_title_clear_time.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.frame_settins_background_under_button_settings.configure(fg_color = '#283F5E')
+
+                self.button_title_start.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_title_stop.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_title_minus_hour.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_title_plus_hour.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_title_minus_minut.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_title_plus_minut.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_settings_open_page_settings.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_settings_shut_page_settings.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.button_settings_save_settings.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+                self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87')
+
+                self.optionmenu_settings_mode_color_ui.configure(fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87')
+
+                self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87')
+
+                self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87')            
+
+
             elif value == 'Красный':
-                # красный: #D65656  #B04C4C  #723131
 
-                self.check_cpu.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.delay.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.clear.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.frame_6.configure(fg_color = '#723131')
-                self.str_b.configure(fg_color = '#D65656',    # цвет в целом
-                                     hover_color = '#B04C4C') # цвет при наведении
-                
-                self.stop_b.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.hour_minus_button.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.hour_plus_button.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.minut_minus_button.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.minut_plus_button.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.setings_b.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.close.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.save.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-                self.option_themes.configure(fg_color = '#D65656', 
-                    button_color = '#D65656', button_hover_color = '#B04C4C')
-                self.option_colors.configure(fg_color = '#D65656', 
-                    button_color = '#D65656', button_hover_color = '#B04C4C')
-                self.otk.configure(fg_color = '#D65656', 
-                    button_color = '#D65656', button_hover_color = '#B04C4C')
-                self.act.configure(fg_color = '#D65656', 
-                    button_color = '#D65656', button_hover_color = '#B04C4C')
+                self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_title_delay_time.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_title_clear_time.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.frame_settins_background_under_button_settings.configure(fg_color = '#723131')
+
+                self.button_title_start.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_title_stop.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_title_minus_hour.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_title_plus_hour.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_title_minus_minut.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_title_plus_minut.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_settings_open_page_settings.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_settings_shut_page_settings.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.button_settings_save_settings.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+                self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#D65656', button_color = '#D65656', button_hover_color = '#B04C4C')
+
+                self.optionmenu_settings_mode_color_ui.configure(fg_color = '#D65656', button_color = '#D65656', button_hover_color = '#B04C4C')
+
+                self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#D65656', button_color = '#D65656', button_hover_color = '#B04C4C')
+
+                self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#D65656', button_color = '#D65656', button_hover_color = '#B04C4C')
+
 
             elif value == 'Зеленый':
                 # зеленый: #41904B  #407347  #315A37
 
-                self.check_cpu.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.delay.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.clear.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.frame_6.configure(fg_color = '#315A37')
-                self.str_b.configure(fg_color = '#41904B',    # цвет в целом
-                                     hover_color = '#407347') # цвет при наведении
-  
-                self.stop_b.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.hour_minus_button.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.hour_plus_button.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.minut_minus_button.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.minut_plus_button.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.setings_b.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.close.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.save.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-                self.option_themes.configure(fg_color = '#41904B', 
-                    button_color = '#41904B', button_hover_color = '#407347')
-                self.option_colors.configure(fg_color = '#41904B', 
-                    button_color = '#41904B', button_hover_color = '#407347')
-                self.otk.configure(fg_color = '#41904B', 
-                    button_color = '#41904B', button_hover_color = '#407347')
-                self.act.configure(fg_color = '#41904B', 
-                    button_color = '#41904B', button_hover_color = '#407347')
+                self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#41904B', hover_color = '#407347')
 
+                self.button_title_delay_time.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_title_clear_time.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.frame_settins_background_under_button_settings.configure(fg_color = '#315A37')
+
+                self.button_title_start.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_title_stop.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_title_minus_hour.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_title_plus_hour.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_title_minus_minut.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_title_plus_minut.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_settings_open_page_settings.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_settings_shut_page_settings.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.button_settings_save_settings.configure(fg_color = '#41904B', hover_color = '#407347')
+
+                self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#41904B', button_color = '#41904B', button_hover_color = '#407347')
+
+                self.optionmenu_settings_mode_color_ui.configure(fg_color = '#41904B', button_color = '#41904B', button_hover_color = '#407347')
+
+                self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#41904B', button_color = '#41904B', button_hover_color = '#407347')
+
+                self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#41904B', button_color = '#41904B', button_hover_color = '#407347')
+                    
+    
             elif value == 'Оранжевый':
                 # оранжевый: #C4834D  #8F623C  #61432A
 
-                self.check_cpu.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.delay.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.clear.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.frame_6.configure(fg_color = '#61432A')
-                self.str_b.configure(fg_color = '#C4834D',    # цвет в целом
-                                     hover_color = '#8F623C') # цвет при наведении
+                self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_title_delay_time.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_title_clear_time.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.frame_settins_background_under_button_settings.configure(fg_color = '#61432A')
+
+                self.button_title_start.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_title_stop.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_title_minus_hour.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_title_plus_hour.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_title_minus_minut.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_title_plus_minut.configure(fg_color = '#C4834D', hover_color = '#8F623C')
                 
-                self.stop_b.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.hour_minus_button.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.hour_plus_button.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.minut_minus_button.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.minut_plus_button.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.setings_b.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.close.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.save.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-                self.option_themes.configure(fg_color = '#C4834D', 
-                    button_color = '#C4834D', button_hover_color = '#8F623C')
-                self.option_colors.configure(fg_color = '#C4834D', 
-                    button_color = '#C4834D', button_hover_color = '#8F623C')
-                self.otk.configure(fg_color = '#C4834D', 
-                    button_color = '#C4834D', button_hover_color = '#8F623C')
-                self.act.configure(fg_color = '#C4834D', 
-                    button_color = '#C4834D', button_hover_color = '#8F623C')
+                self.button_settings_open_page_settings.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_settings_shut_page_settings.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.button_settings_save_settings.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+                self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#C4834D', button_color = '#C4834D', button_hover_color = '#8F623C')
+
+                self.optionmenu_settings_mode_color_ui.configure(fg_color = '#C4834D', button_color = '#C4834D', button_hover_color = '#8F623C')
+
+                self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#C4834D', button_color = '#C4834D', button_hover_color = '#8F623C')
+
+                self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#C4834D', button_color = '#C4834D', button_hover_color = '#8F623C')
+                    
 
             elif value == 'Фиолетовый':
                 # фиолетовый: #9250DE  #5B3982  #462B64
 
-                self.check_cpu.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.delay.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.clear.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.frame_6.configure(fg_color = '#462B64')
-                self.str_b.configure(fg_color = '#9250DE',    # цвет в целом
-                                     hover_color = "#462B64") # цвет при наведении
-                
-                self.stop_b.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.hour_minus_button.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.hour_plus_button.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.minut_minus_button.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.minut_plus_button.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.setings_b.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.close.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.save.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-                self.option_themes.configure(fg_color = '#9250DE', 
-                    button_color = '#9250DE', button_hover_color = '#5B3982')
-                self.option_colors.configure(fg_color = '#9250DE', 
-                    button_color = '#9250DE', button_hover_color = '#5B3982')
-                self.otk.configure(fg_color = '#9250DE', 
-                    button_color = '#9250DE', button_hover_color = '#5B3982')
-                self.act.configure(fg_color = '#9250DE', 
-                    button_color = '#9250DE', button_hover_color = '#5B3982')
+                self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+                self.button_title_delay_time.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+                self.button_title_clear_time.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+                self.frame_settins_background_under_button_settings.configure(fg_color = '#462B64')
+
+                self.button_title_start.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+                self.button_title_stop.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+                self.button_title_minus_hour.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+                self.button_title_plus_hour.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+                self.button_title_minus_minut.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+                self.button_title_plus_minut.configure(fg_color = '#9250DE',hover_color = '#5B3982')
+
+                self.button_settings_open_page_settings.configure(fg_color = '#9250DE',hover_color = '#5B3982')
+
+                self.button_settings_shut_page_settings.configure(fg_color = '#9250DE',hover_color = '#5B3982')
+
+                self.button_settings_save_settings.configure(fg_color = '#9250DE',hover_color = '#5B3982')
+
+                self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#9250DE', button_color = '#9250DE', button_hover_color = '#5B3982')
+
+                self.optionmenu_settings_mode_color_ui.configure(fg_color = '#9250DE', button_color = '#9250DE', button_hover_color = '#5B3982')
+
+                self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#9250DE', button_color = '#9250DE', button_hover_color = '#5B3982')
+
+                self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#9250DE', button_color = '#9250DE', button_hover_color = '#5B3982')
 
 
-        def otk_value(value):
-            print('Выбран режим:', value)
+        def function_choise_countdown_time(value):
 
             if value == 'Минутам':
-                self.hour_text.configure(text = 'Часы:')
-                self.minut_text.configure(text = 'Минуты:')
+                self.label_title_designation_hours.configure(text = 'Часы:')
+                self.label_title_designaton_minuts.configure(text = 'Минуты:')
 
-                self.hour_t.configure(text = 'H')
-                self.minut_t.configure(text = 'M')
-                self.otkq = 60000
+                self.label_title_unit_time_hours.configure(text = 'H')
+                self.label_title_unit_time_minuts.configure(text = 'M')
+                self.value_for_countwond_times = 60000
+
             elif value == 'Секундам':
-                self.hour_text.configure(text = 'Минуты:')
-                self.minut_text.configure(text = 'Секунды:')
+                self.label_title_designation_hours.configure(text = 'Минуты:')
+                self.label_title_designaton_minuts.configure(text = 'Секунды:')
 
-                self.hour_t.configure(text = 'M')
-                self.minut_t.configure(text = 'S')
-                self.otkq = 1000
+                self.label_title_unit_time_hours.configure(text = 'M')
+                self.label_title_unit_time_minuts.configure(text = 'S')
+                self.value_for_countwond_times = 1000
 
 
         def filepath(file_path, content):
@@ -549,31 +600,31 @@ class App(customtkinter.CTk):
                 f.write(content)
             print('saved')
 
-        def save():
-            
-# Тема + Режим отсчета + Действие + Цвет            
 
-            theme = self.theme_var.get()[0]
-            otk = self.otk_var.get()[0]
-            act = self.choise_act.get()[0]
-            cpu = self.check_var.get()[-1]
-            time = self.check_entry.get()
-            color = self.color_var.get()
-            
+        def function_save_settings():
+            # Время для автогибернации + Тема + Режим отсчета + Действие + Автогибернация + Цвет            
 
-            print('theme:', theme)  # Работает
-            print('otk:', otk)  # Работает
-            print('act:', act)  # 
-            print('cpu:', cpu)  #
-            print('time the load:', time) #
-            print('color:', color)  # Работает
+            theme = self.value_optionmenu_mode_themes_ui.get()[0]
+            otk = self.value_optionmenu_mode_countdown_time.get()[0]
+            act = self.value_optionmenu_mode_act_after_time.get()[0]
+            cpu = self.value_checkbox_mode_auto_hibernation.get()[-1]
+            time = self.entry_settings_auto_shutdown.get()
+            color = self.value_optionmenu_mode_color_ui.get()
             
-
+            print('Theme ui:', theme)
+            print('Counter the time:', otk)
+            print('Act:', act) 
+            print('Auto hibernation:', cpu)
+            print('Time for auto hibernation:', time)
+            print('Color ui:', color)
+            
             content = time + 'L' + str(theme) + str(otk) + str(act) + str(cpu) + str(color)
 
             filepath('config.txt', content)
 
-        def act(value):
+
+        def function_act_after_time(value):
+            
             if value == 'Гибернация':
                 self.command = 'shutdown /h'
             elif value == 'Выключение':
@@ -582,1233 +633,1332 @@ class App(customtkinter.CTk):
                 self.command = 'shutdown /r /t 0'
 
 
-        settings_image = Image.open(resource_path('settings.png'))
-        settings_photo = ImageTk.PhotoImage(settings_image)
+        # Экспорт значения из checkbox_settings_mode_auto_hibernation
+        self.value_checkbox_mode_auto_hibernation = customtkinter.StringVar(value = 'off')
 
-        close_image = Image.open(resource_path('close.png'))
-        close_photo = ImageTk.PhotoImage(close_image)
-
-        save_image = Image.open(resource_path('save.png'))
-        save_photo = ImageTk.PhotoImage(save_image)
-
-  
-# напиши свитч с функцией автовыключения пк исходя из нагрузки пк на цп
-
-
-
-
-        self.check_var = customtkinter.StringVar(value = 'off')
-        self.check_cpu = customtkinter.CTkCheckBox(self,
+        # Чек бокс в настройках. служит для автоматической гибернации self.function_auto_hibernation
+        self.checkbox_settings_mode_auto_hibernation = customtkinter.CTkCheckBox(self,
             corner_radius = 0, text = '',
             onvalue = 'on', offvalue = 'off',
-            variable = self.check_var, 
-            command = self.check_values)
-        self.check_cpu.place(x = 700, y = 100)
-
-
-        self.check_cpu_label = customtkinter.CTkLabel(self,
-            text = 'Авто-гибернация:',
-            font = ('Arial', 19))
-        self.check_cpu_label.place(x = 700, y = 100)
-
-        self.entry_count_label = customtkinter.CTkLabel(self,
-            text = 'Секунд до авто-гибернации:',
-            font = ('Arial', 19))
-        self.check_cpu_label.place(x = 700, y = 100)
-
-
-        self.label_act = customtkinter.CTkLabel(self,
-            text = 'Действие:', 
-            font = ('Arial', 19))
-        self.label_act.place(x = 700, y = 100)
-
-        self.choise_act = customtkinter.StringVar()
-
-        self.act = customtkinter.CTkOptionMenu(self,
-            width = 150, height = 30,
-            font = ('Arial', 16), corner_radius = 0,
-            fg_color = '#346EBA', button_color = '#346EBA',
-            button_hover_color = '#3A5B87',
-            values = ['Гибернация', 'Отключение', 'Перезагрузка'],
-            variable = self.choise_act,
-            command = act)
-        self.act.place(x = 700, y = 100)
-
-        if self.f_act == 'Г':
-            self.act.set('Гибернация')
-        elif self.f_act == 'О':
-            self.act.set('Отключение')
-        elif self.f_act == 'П':
-            self.act.set('Перезагрузка')
-
+            variable = self.value_checkbox_mode_auto_hibernation, 
+            command = self.function_auto_hibernation)
         
+        self.checkbox_settings_mode_auto_hibernation.place(x = 600, y = 10)
 
-        self.frame_1 = customtkinter.CTkFrame(self, 
-            width = 58, height = 440,
-            fg_color = '#2E2E2E', corner_radius = 0)
-        self.frame_1.place(x = 455, y = 0)
+        # Лейбл в настройках. служит для обозначения состоянии функции авто-гибернация function_auto_hibernation
+        self.label_settings_state_auto_hibernation = customtkinter.CTkLabel(self,
+            font = ('Arial', 19),
+            text = 'Авто-гибернация:')
+        
+        self.label_settings_state_auto_hibernation.place(x = 700, y = 10)
 
-        self.frame_2 = customtkinter.CTkFrame(self,
+        # Лейбл в настройках. служит для обозначения количества секунд до авто-гибернации
+        self.label_settings_time_for_auto_hibernation = customtkinter.CTkLabel(self,
+            font = ('Arial', 19),
+            text = 'Секунд до авто-гибернации:')
+
+        self.label_settings_time_for_auto_hibernation.place(x = 700, y = 40)
+
+        # Лейбл в настройках. служит для обозначения выбора действия после истечения времени optionmenu_settings_mode_act_after_time
+        self.label_settings_choise_act_after_time = customtkinter.CTkLabel(self,
+            font = ('Arial', 19),
+            text = 'Действие:')
+        
+        self.label_settings_choise_act_after_time.place(x = 700, y = 70)
+
+        # Лейбл в настройках. служит для обозначения выбора темы ui
+        self.label_settings_choise_themes_ui = customtkinter.CTkLabel(self,
+            font = ('Arial', 19),
+            text = 'Тема приложения:')
+        
+        self.label_settings_choise_themes_ui.place(x = 700, y = 100)
+
+        # Лейбл в настройках. служит для обозначения выбора отсчета времени
+        self.label_settings_choise_countdown_time = customtkinter.CTkLabel(self,
+            font = ('Arial', 19),
+            text = 'Отсчет по:')
+        self.label_settings_choise_countdown_time.place(x = 700, y = 130)
+
+        # Лейбл в настройках. служит для обозначения выбора цвета ui
+        self.label_settings_choise_color_ui = customtkinter.CTkLabel(self,
+            font = ('Arial', 19),
+            text = 'Цвет приложения:')
+        
+        self.label_settings_choise_color_ui.place(x = 700, y = 170)
+
+        # Экспорт значения из optionmenu_settings_mode_auto_hibernation
+        self.value_optionmenu_mode_act_after_time = customtkinter.StringVar()
+        
+        # Меню выбора в настройках. служит для выбора действия после окончания времени function_act_after_time
+        self.optionmenu_settings_mode_act_after_time = customtkinter.CTkOptionMenu(self,
+            font = ('Arial', 16),
+            values = ['Гибернация', 'Отключение', 'Перезагрузка'],
+            width = 150, height = 30, corner_radius = 0,
+            fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87',
+            variable = self.value_optionmenu_mode_act_after_time,
+            command = function_act_after_time)
+        
+        self.optionmenu_settings_mode_act_after_time.place(x = 700, y = 400)
+
+        # Импорт значения из файла настроек для optionmenu_settings_mode_act_after_time
+        if self.open_file_optionmenu_mode_act == 'Г':
+            self.optionmenu_settings_mode_act_after_time.set('Гибернация')
+
+        elif self.open_file_optionmenu_mode_act == 'О':
+            self.optionmenu_settings_mode_act_after_time.set('Отключение')
+
+        elif self.open_file_optionmenu_mode_act == 'П':
+            self.optionmenu_settings_mode_act_after_time.set('Перезагрузка')
+
+        # Фрейм в главном окне, находится под полями ввода
+        self.frame_title_background_left_side = customtkinter.CTkFrame(self,
             width = 260, height = 440, 
             fg_color = '#2E2E2E', corner_radius = 0)
-        self.frame_2.place(x = 0, y = 0)
+        self.frame_title_background_left_side.place(x = 0, y = 0)
 
-        self.frame_3 = customtkinter.CTkFrame(self,
-            width = 230, height = 310,
+        # Фрейм в главном окне, находится под кнопкой "Настройки"
+        self.frame_settings_background_under_button_settings = customtkinter.CTkFrame(self, 
+            width = 58, height = 440,
             fg_color = '#2E2E2E', corner_radius = 0)
-        self.frame_3.place(x = 700, y = 100)
+        self.frame_settings_background_under_button_settings.place(x = 455, y = 0)
 
-        self.frame_4 = customtkinter.CTkFrame(self,
-            width = 30, height = 370,
-            fg_color = '#2E2E2E', corner_radius = 0)
-        self.frame_4.place(x = 700, y = 600)
+        # Фрейм в настройках. служит задним планом для виджетов на левой стороне
+        self.frame_settings_background_left_side = customtkinter.CTkFrame(self,
+            width = 30, height = 370, corner_radius = 0,
+            fg_color = '#2E2E2E')
 
-        self.frame_5 = customtkinter.CTkFrame(self,
-            width = 30, height = 370,
-            fg_color = '#2E2E2E', corner_radius = 0)
-        self.frame_5.place(x = 700, y = 600)
+        self.frame_settings_background_left_side.place(x = 1150, y = 10)
 
-        self.frame_6 = customtkinter.CTkFrame(self,
-            width = 58, height = 370,
-            fg_color = "#315A37", corner_radius = 0)
-        self.frame_6.place(x = 700, y = 600)
+        # Фрейм в настройках. служит задним планом для виджетов в правой стороне
+        self.frame_settings_background_right_side = customtkinter.CTkFrame(self,
+            width = 30, height = 370, corner_radius = 0,
+            fg_color = '#2E2E2E')
+        
+        self.frame_settings_background_right_side.place(x = 1200, y = 10)
 
-        self.setings_b = customtkinter.CTkButton(self,
-            image = settings_photo, width = 56, height = 56, 
-            corner_radius = 0, text = '', 
+        # Фрейм в настроках. служит задним планом для кнопки "Закрыть настройки"
+        self.frame_settins_background_under_button_settings = customtkinter.CTkFrame(self,
+            width = 58, height = 370, corner_radius = 0,
+            fg_color = "#315A37")
+        
+        self.frame_settins_background_under_button_settings.place(x = 1250, y = 10)
+
+        # # Лейбл в настроках. служит для обозначения выбора шрифта ui
+        # self.label_settings_choise_font_ui = customtkinter.CTkLabel(self,
+        #     font = ('Arial', 19),
+        #     text = 'Шрифт:')
+
+        # self.label_settings_choise_font_ui.place(x = 600, y = 260)
+
+        # Кнопка на главном экране. служит для открытия страницы настроек function_open_settings
+        self.button_settings_open_page_settings = customtkinter.CTkButton(self,
+            text = '',
+            image = image_open_settings, 
+            width = 56, height = 56, corner_radius = 0, 
             fg_color = '#346EBA', hover_color = '#3A5B87',
-            command = sett)
-        self.setings_b.place(x = 455, y = 0)
+            command = function_open_settings)
+        
+        self.button_settings_open_page_settings.place(x = 455, y = 0)
 
-        self.close = customtkinter.CTkButton(self,
-            image = close_photo, width = 56, height = 56,
-            corner_radius = 0, text = '',
-            fg_color = '#346EBA', hover_color = '#3A5B87',
-            command = close)
-        self.close.place(x = 700, y = 100)
-
-        self.save = customtkinter.CTkButton(self,
-            image = save_photo, text = '',
+        # Кнопка в настройках. служит для закрытия страницы настроек function_shut_settings
+        self.button_settings_shut_page_settings = customtkinter.CTkButton(self,
+            text = '',
+            image = image_shut_settings, 
             width = 56, height = 56, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
-            command = save)
-        self.save.place(x = 700, y = 100)
+            command = function_shut_settings)
 
+        self.button_settings_shut_page_settings.place(x = 1350, y = 10)
 
-        self.themes = customtkinter.CTkLabel(self,
-            text = 'Тема приложения:', 
-            font = ('Arial', 19))
-        self.themes.place(x = 700, y = 100)
+        # Кнопка в настройках. служит для сохранения настроек function_save_settings
+        self.button_settings_save_settings = customtkinter.CTkButton(self,
+            text = '',
+            image = image_save_settigs,
+            width = 56, height = 56, corner_radius = 0,
+            fg_color = '#346EBA', hover_color = '#3A5B87',
+            command = function_save_settings)
 
-        self.theme_var = customtkinter.StringVar()
+        self.button_settings_save_settings.place(x = 1350, y = 80)
 
-        self.option_themes = customtkinter.CTkOptionMenu(self,
-            width = 150, height = 30,
-            font = ('Arial', 16), corner_radius = 0,
-            fg_color = '#346EBA', button_color = '#346EBA',
-            button_hover_color = '#3A5B87',
+        # Экспорт значения из optionmenu_settings_mode_themes_ui
+        self.value_optionmenu_mode_themes_ui = customtkinter.StringVar()
+
+        # Меню выбора в настройках. служит для выбора темы ui
+        self.optionmenu_settings_mode_themes_ui = customtkinter.CTkOptionMenu(self,
+            font = ('Arial', 16),
             values = ['Темная', 'Светлая'],
-            variable = self.theme_var,
-            command = option_themes)
-        self.option_themes.place(x = 700, y = 100)
-        if self.f_theme == 'С':
-            self.option_themes.set('Светлая')
-        elif self.f_theme == 'Т':
-            self.option_themes.set('Темная')
-
-        self.colors = customtkinter.CTkLabel(self,
-            text = 'Цвет приложения:',
-            font = ('Arial', 19))
-        self.colors.place(x = 700, y = 100)
-
-        self.color_var = customtkinter.StringVar()
-
-        self.option_colors = customtkinter.CTkOptionMenu(self,
-            width = 150, height = 30,
-            font = ('Arial', 16), corner_radius = 0,
-            fg_color = '#346EBA', button_color = '#346EBA',
-            button_hover_color = '#3A5B87',
-            values = ['Голубой', 'Красный', 'Зеленый', 'Оранжевый', 'Фиолетовый'],
-            variable = self.color_var,
-            command = option_colors)
-        self.option_colors.place(x = 700, y = 100)
-        self.option_colors.set(self.color)
-
-        self.otk_var = customtkinter.StringVar()
-
-        self.otk = customtkinter.CTkOptionMenu(self,
-            width = 150, height = 30,
-            font = ('Arial', 16),corner_radius = 0,
-            fg_color = '#346EBA', button_color = '#346EBA',
-            button_hover_color = '#3A5B87', state = 'normal',
-            values = ['Минутам', 'Секундам'],
-            variable = self.otk_var,
-            command = otk_value)
-        self.otk.place(x = 700, y = 100)
+            width = 150, height = 30, corner_radius = 0,
+            fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87',
+            variable = self.value_optionmenu_mode_themes_ui,
+            command = function_choise_themes_ui)
         
+        self.optionmenu_settings_mode_themes_ui.place(x = 700, y = 250)
 
-        if self.f_otk == 'М':
-            self.otk.set('Минутам')
+        # Импорт значения из файла настроек для optionmenu_settings_mode_themes_ui
+        if self.open_file_optionmenu_mode_themes_ui == 'С':
+            self.optionmenu_settings_mode_themes_ui.set('Светлая')
+
+        elif self.open_file_optionmenu_mode_themes_ui == 'Т':
+            self.optionmenu_settings_mode_themes_ui.set('Темная')
+
+        # Экспорт значения из optionmenu_settings_mode_color_ui
+        self.value_optionmenu_mode_color_ui = customtkinter.StringVar()
+
+        # Меню выбора в настройках. служит для выбора цвета ui
+        self.optionmenu_settings_mode_color_ui = customtkinter.CTkOptionMenu(self,
+            font = ('Arial', 16),
+            values = ['Голубой', 'Красный', 'Зеленый', 'Оранжевый', 'Фиолетовый'],
+            width = 150, height = 30, corner_radius = 0,
+            fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87',
+            variable = self.value_optionmenu_mode_color_ui,
+            command = function_choise_color_ui)
+
+        self.optionmenu_settings_mode_color_ui.place(x = 700, y = 300)
+        self.optionmenu_settings_mode_color_ui.set(self.open_file_optionmenu_mode_color_ui)
+
+        # Экспорт значения из optionmenu_settings_mode_countdown_time
+        self.value_optionmenu_mode_countdown_time = customtkinter.StringVar()
+
+        # Меню выбора в настройках. служит для выбора отсчета времени
+        self.optionmenu_settings_mode_countdown_time = customtkinter.CTkOptionMenu(self,
+            font = ('Arial', 16),
+            values = ['Минутам', 'Секундам'],
+            width = 150, height = 30, corner_radius = 0,
+            fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87', 
+            state = 'normal',
+            variable = self.value_optionmenu_mode_countdown_time,
+            command = function_choise_countdown_time)
+        
+        self.optionmenu_settings_mode_countdown_time.place(x = 700, y = 350)
+
+        # Импорт значения из файла настроек для optionmenu_settings_mode_countdown_time
+        if self.open_file_optionmenu_mode_countdown_time == 'М':
+            self.optionmenu_settings_mode_countdown_time.set('Минутам')
+
         else:
-            self.otk.set('Секундам')
+            self.optionmenu_settings_mode_countdown_time.set('Секундам')
 
-        self.otk_text = customtkinter.CTkLabel(self,
-            text = 'Отсчет по:',
-            font = ('Arial', 19))
-        self.otk_text.place(x = 700, y = 100)
+        # Лейбл на главном экране. служит счетчиком времени для пользователей, то есть показывает то, сколько минут осталось
+        self.label_title_count_time_minuts = customtkinter.CTkLabel(self,
+            font = ('Arial', 140, 'bold'),
+            text = '00')
+        
+        self.label_title_count_time_minuts.place(x = 279, y = 145)
 
-        #vision time out --- Label()
-        self.time_out_m = customtkinter.CTkLabel(self,
-            text = '00', font = ('Arial', 140, 'bold'))
-        self.time_out_m.place(x = 279, y = 145)
+        # Лейбл на главном экране. служит счетчиком времени для пользователей, то есть показывает то, сколько часов осталось
+        self.label_title_count_time_hours = customtkinter.CTkLabel(self,
+            font = ('Arial', 140, 'bold'),
+            text = '00')
+        
+        self.label_title_count_time_hours.place(x = 279, y = 10)
 
-        self.time_out_h = customtkinter.CTkLabel(self,
-            text = '00', font = ('Arial', 140, 'bold'))
-        self.time_out_h.place(x = 279, y = 10)
+        # Лейбл на главном экране. служит задним планом для кнопки button_title_delay_time
+        self.frame_title_background_delay = customtkinter.CTkFrame(self,
+            width = 210, height = 85, corner_radius = 0,
+            fg_color = '#2E2E2E')
 
-        self.under_delay = customtkinter.CTkFrame(self,
-            width = 210, height = 85,
-            fg_color = '#2E2E2E', corner_radius = 0)
-        self.under_delay.place(x = 250, y = 290)
+        self.frame_title_background_delay.place(x = 250, y = 290)
 
-        self.delay = customtkinter.CTkButton(self,
-            text = 'Отложить время', width = 185, height = 50,
-            font = ('Arial', 19), corner_radius = 0,
+        # Кнопка на главном экране. служит, чтобы откладывать время на 5 минут function_delay_time
+        self.button_title_delay_time = customtkinter.CTkButton(self,
+            font = ('Arial', 19),
+            text = 'Отложить время',
+            width = 185, height = 50, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
-            command = delay,
-            state = 'disabled')
-        self.delay.place(x = 265, y = 300)
+            state = 'disabled',
+            command = function_delay_time)
 
-        self.clear = customtkinter.CTkButton(self,
-            text = 'Очистить', width = 230, height = 50,
-            font = ('Arial', 23), corner_radius = 0,
+        self.button_title_delay_time.place(x = 265, y = 300)
+
+        # Кнопка на главном экране. служит для очитски полей ввода, лейблов на главном экране function_clear_time
+        self.button_title_clear_time = customtkinter.CTkButton(self,
+            font = ('Arial', 23),
+            text = 'Очистить',
+            width = 230, height = 50, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
-            command = clear,
-            state = 'disabled')
-        self.clear.place(x = 15, y = 300)
+            state = 'disabled',
+            command = function_clear_time)
+        
+        self.button_title_clear_time.place(x = 15, y = 300)
 
-        #start turn off pc --- Button()
-        self.str_b = customtkinter.CTkButton(self, 
-            text = 'Запустить', width = 230, height = 75,
-            font = ('Arial', 23), corner_radius = 0,
+        # Кнопка на главном экране. служит для запуска таймера function_start_time
+        self.button_title_start_time = customtkinter.CTkButton(self,
+            font = ('Arial', 23),
+            text = 'Запустить', 
+            width = 230, height = 75, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
-            command = self.start_time)
-        self.str_b.place(x = 15, y = 155)      
+            command = self.function_start_time)
+        
+        self.button_title_start_time.place(x = 15, y = 155)      
 
-        #stop turn off pc --- Button()
-        self.stop_b = customtkinter.CTkButton(self,
-            text = 'Остановить', width = 230, height = 50,
-            font = ('Arial', 23), corner_radius = 0,
+        # Кнопка на главном экране. служит для оставновки таймера function_stop_time
+        self.button_title_stop_time = customtkinter.CTkButton(self,
+            font = ('Arial', 23),
+            text = 'Остановить', 
+            width = 230, height = 50, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
-            command = self.stoped,
-            state = 'disabled')
-        self.stop_b.place(x = 15, y = 240)
+            state = 'disabled',
+            command = self.function_stop_time)
+        
+        self.button_title_stop_time.place(x = 15, y = 240)
 
-        #hours --- Entry()
+        # Поле ввода на главном экране. служит для получения количества часов
         valid = (self.register(validate), '%P')
-        self.entry_hour = customtkinter.CTkEntry(self,
+
+        self.entry_title_accept_hours = customtkinter.CTkEntry(self,
+            font = ('Arial', 23),
             width = 150, height = 40, corner_radius = 0, 
-            justify = 'center', font = ('Arial', 23), 
+            justify = 'center', 
             validate = 'key',
             validatecommand = valid)
-        self.entry_hour.place(x = 55, y = 30)
-        self.entry_hour.insert(0, '0')
 
+        self.entry_title_accept_hours.place(x = 55, y = 30)
+        self.entry_title_accept_hours.insert(0, '0')
 
-        self.check_entry = customtkinter.CTkEntry(self,
-            corner_radius = 0, justify = 'right',
-            width = 100, font = ('Arial', 23),
+        # Поле ввода в настройках. служит для получения количества секунд до авто гибернации
+        self.entry_settings_auto_shutdown = customtkinter.CTkEntry(self,
+            font = ('Arial', 23),
+            width = 100, corner_radius = 0, 
+            justify = 'right',
             validate = 'key',
             validatecommand = valid)
-        self.check_entry.place(x = 700, y = 100)
-        self.check_entry.insert(0, self.f_time)
 
+        self.entry_settings_auto_shutdown.place(x = 1000, y = 10)
+        self.entry_settings_auto_shutdown.insert(0, self.open_file_entry_time_for_auto_hibernation)
 
-
-        #hours --- Button()
-        self.hour_minus_button = customtkinter.CTkButton(self,
-            text = '-', font = ('Arial', 24), corner_radius = 0,  
+        # Кнопа на главном экране. служит для уменьшения количества часов поля ввода entry_title_accept_hours
+        self.button_title_minus_hour = customtkinter.CTkButton(self,
+            font = ('Arial', 24),
+            text = '-', 
+            width = 40, height = 40, corner_radius = 0,  
             fg_color = '#346EBA', hover_color = '#3A5B87',                   
-            width = 40, height = 40, command = hour_minus)
-        self.hour_minus_button.place(x = 15, y = 30)
+            command = hour_minus)
+        
+        self.button_title_minus_hour.place(x = 15, y = 30)
 
-        self.hour_plus_button = customtkinter.CTkButton(self,
-            text = '+', font = ('Arial', 24), corner_radius = 0,
+        # Кнопка на главном экране. служит для увеличения количества часов поля ввода entry_title_accept_hours
+        self.button_title_plus_hour = customtkinter.CTkButton(self,
+            font = ('Arial', 24),
+            text = '+',
+            width = 40, height = 40, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',                             
-            width = 40, height = 40, command = hour_plus)
-        self.hour_plus_button.place(x = 205, y = 30)
+            command = hour_plus)
+        
+        self.button_title_plus_hour.place(x = 205, y = 30)
 
-        #hours --- Label()
-        self.hour_text = customtkinter.CTkLabel(self,
-            text = 'Часы:', font = ('Arial', 20),
+        # Лейбл на главном экране. служит для обозначния поля ввода entry_title_accept_hours "часами"
+        self.label_title_designation_hours = customtkinter.CTkLabel(self,
+            font = ('Arial', 20),
+            text = 'Часы:',
             fg_color = '#2E2E2E')
-        self.hour_text.place(x = 104, y = 2)
+        
+        self.label_title_designation_hours.place(x = 104, y = 2)
 
-
-        #minuts --- Entry()
-        self.entry_minut = customtkinter.CTkEntry(self,
+        # Поле ввода на главном экране. служит для получения количества минут 
+        self.entry_title_accept_minuts = customtkinter.CTkEntry(self,
+            font = ('Arial', 23),
             width = 150, height = 40, corner_radius = 0, 
-            justify = 'center',font = ('Arial', 23), 
+            justify = 'center', 
             validate = 'key',
             validatecommand = valid)
-        self.entry_minut.place(x = 55, y = 100)
-        self.entry_minut.insert(0, '0')
+        
+        self.entry_title_accept_minuts.place(x = 55, y = 100)
+        self.entry_title_accept_minuts.insert(0, '0')
 
-        #minuts --- Button() 
-        self.minut_minus_button = customtkinter.CTkButton(self,
-            text = '-', font = ('Arial', 24), corner_radius = 0,
+        # Кнопка на главном экране. служит для уменьшения количества минут поля ввода entry_title_accept_minuts
+        self.button_title_minus_minut = customtkinter.CTkButton(self,
+            font = ('Arial', 24),
+            text = '-',
+            width = 40, height = 40, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
-            width = 40, height = 40, command = minut_minus)
-        self.minut_minus_button.place(x = 15, y = 100)
+            command = minut_minus)
+        
+        self.button_title_minus_minut.place(x = 15, y = 100)
 
-        self.minut_plus_button = customtkinter.CTkButton(self,
-            text = '+', font = ('Arial', 24), corner_radius = 0,
+        # Кнопка на главном экране. служит для увелечения количества минут поля ввода entry_title_accept_minuts
+        self.button_title_plus_minut = customtkinter.CTkButton(self,
+            font = ('Arial', 24),
+            text = '+', 
+            width = 40, height = 40, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
-            width = 40, height = 40, command = minut_plus)
-        self.minut_plus_button.place(x = 205, y = 100)
+            command = minut_plus)
+        
+        self.button_title_plus_minut.place(x = 205, y = 100)
 
-        #minuts --- Label()
-        self.minut_text = customtkinter.CTkLabel(self,
-            text = 'Минуты:', font = ('Arial', 20),
+        # Лейбл на главном экране. служит для обозначния поля ввода entry_title_accept_minuts "минутами"
+        self.label_title_designaton_minuts = customtkinter.CTkLabel(self,
+            font = ('Arial', 20),
+            text = 'Минуты:',
             fg_color = '#2E2E2E')
-        self.minut_text.place(x = 92, y = 72)
+        
+        self.label_title_designaton_minuts.place(x = 92, y = 72)
 
-        #letter of the hour --- Label()
-        self.hour_t = customtkinter.CTkLabel(self,
-            text = 'H', font = ('Arial', 18))
-        self.hour_t.place(x = 435, y = 119)
+        # Лейбл на главном экране. служит для обозначения единицы времени таймера "часами"
+        self.label_title_unit_time_hours = customtkinter.CTkLabel(self,
+            font = ('Arial', 18),
+            text = 'H')
+        
+        self.label_title_unit_time_hours.place(x = 435, y = 119)
 
-        #letter of the minut --- Label()
-        self.minut_t = customtkinter.CTkLabel(self,
-            text = 'M', font = ('Arial', 18))
-        self.minut_t.place(x = 435, y = 254)
+        # Лейбл на главном экране. служит для обозначения единицы времени таймера "минутами"
+        self.label_title_unit_time_minuts = customtkinter.CTkLabel(self,
+            font = ('Arial', 18),
+            text = 'M')
+        
+        self.label_title_unit_time_minuts.place(x = 435, y = 254)
 
-        #time will run ot in --- Label()
-        self.time = customtkinter.CTkLabel(self,
-            text = 'Время закончится через:',
-            font = ('Arial', 15))
-        self.time.place(x = 272, y = 0)
+        # Лейбл на главном экране. Служит для ориентировки пользователя во времени, то есть дает понимает того, сколько времени осталос до дейтсвия
+        self.label_title_time_out_through = customtkinter.CTkLabel(self,
+            font = ('Arial', 15), 
+            text = 'Время закончится через:')
+        
+        self.label_title_time_out_through.place(x = 272, y = 0)
 
+        # Поле ввода под главным экраном. служит для ориентировки во времени функции function_stop_time, то есть нужна для оставновки и возобновлении времени в нужной точке
+        self.entry_under_title_for_function_stop_time_hours = customtkinter.CTkEntry(self, width = 50)
+        self.entry_under_title_for_function_stop_time_hours.place(x = 10, y = 450)
 
-        #invisible Entry() to stoping time
-        self.vis_entry = customtkinter.CTkEntry(self, width = 50)
-        self.vis_entry.place(x = 10, y = 450)
+        # Поле ввода под главным экраном. служит для ориентировки во времени функции function_stop_time, то есть нужна для оставновки и возобновлении времени в нужной точке
+        self.entry_under_title_for_function_stop_time_minuts = customtkinter.CTkEntry(self, width = 50)
+        self.entry_under_title_for_function_stop_time_minuts.place(x = 10, y = 485)
 
-        #invisible Entry() to stoping time
-        self.vis_entry_2 = customtkinter.CTkEntry(self, width = 50)
-        self.vis_entry_2.place(x = 10, y = 485)
+        # Лейбл под главным экраном. служит для определения поля ввода с единицей времени "часы"
+        self.label_for_designation_hours_entry_under_title = customtkinter.CTkLabel(self, text = 'Hours', font = ('Arial', 16))
+        self.label_for_designation_hours_entry_under_title.place(x = 70, y = 450)
 
-        #designation hours
-        self.vis_hour = customtkinter.CTkLabel(self, 
-            text = 'vis hour', font = ('Arial', 14))
-        self.vis_hour.place(x = 65, y = 450)
-
-        #designation minuts
-        self.vis_minut = customtkinter.CTkLabel(self,
-            text = 'vis minut', font = ('Arial', 14))
-        self.vis_minut.place(x = 65, y = 485)
-
-
-        self.en_h = customtkinter.CTkEntry(self, width = 50)
-        self.en_h.place(x = 150, y = 450)
-
-        self.en_m = customtkinter.CTkEntry(self, width = 50)
-        self.en_m.place(x = 150, y = 485)
-
-        self.vis_hour = customtkinter.CTkLabel(self, 
-            text = 'en h', font = ('Arial', 14))
-        self.vis_hour.place(x = 205, y = 450)
-
-        #designation minuts
-        self.vis_minut = customtkinter.CTkLabel(self,
-            text = 'en m', font = ('Arial', 14))
-        self.vis_minut.place(x = 205, y = 485)
+        # Лейбл под главным экраном. служит для определения поля ввода с единицой времени "минуты"
+        self.label_for_designation_minuts_entry_under_title = customtkinter.CTkLabel(self, text = 'Minuts', font = ('Arial', 16))
+        self.label_for_designation_minuts_entry_under_title.place(x = 70, y = 485)
 
 
-        if self.color == 'Голубой':
-                # голубой: #346EBA  #3A5B87  #283F5E
-            self.check_cpu.configure(fg_color = '#346EBA', 
-                                     hover_color = '#3A5B87')
-            self.delay.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.clear.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.frame_6.configure(fg_color = '#283F5E')
-            self.str_b.configure(fg_color = '#346EBA',    # цвет в целом
-                                     hover_color = '#3A5B87') # цвет при наведении
+        # голубой:    #346EBA  #3A5B87  #283F5E
+        # красный:    #FF4242  #B04C4C  #723131
+        # зеленый:    #52D163  #4E9158  #315A37
+        # оранжевый:  #DB9960  #8F623C  #61432A
+        # фиолетовый: #5B3982  #9250DE  #462B64
+
+        # fg_color - отображаемый цвет
+        # hover_color - цвет при наведении
+        if self.open_file_optionmenu_mode_color_ui == 'Голубой':
+
+            self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_title_delay_time.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_title_clear_time.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.frame_settins_background_under_button_settings.configure(fg_color = '#283F5E')
+
+            self.button_title_start_time.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_title_stop_time.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_title_minus_hour.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_title_plus_hour.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_title_minus_minut.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_title_plus_minut.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_settings_open_page_settings.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_settings_shut_page_settings.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.button_settings_save_settings.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+
+            self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87')
+
+            self.optionmenu_settings_mode_color_ui.configure(fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87')
+
+            self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87')
+
+            self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87')            
+
+
+        elif self.open_file_optionmenu_mode_color_ui == 'Красный':
+
+            self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_title_delay_time.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_title_clear_time.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.frame_settins_background_under_button_settings.configure(fg_color = '#723131')
+
+            self.button_title_start_time.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_title_stop_time.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_title_minus_hour.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_title_plus_hour.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_title_minus_minut.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_title_plus_minut.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_settings_open_page_settings.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_settings_shut_page_settings.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.button_settings_save_settings.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+
+            self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#D65656', button_color = '#D65656', button_hover_color = '#B04C4C')
+
+            self.optionmenu_settings_mode_color_ui.configure(fg_color = '#D65656', button_color = '#D65656', button_hover_color = '#B04C4C')
+
+            self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#D65656', button_color = '#D65656', button_hover_color = '#B04C4C')
+
+            self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#D65656', button_color = '#D65656', button_hover_color = '#B04C4C')
+
+
+        elif self.open_file_optionmenu_mode_color_ui == 'Зеленый':
+
+            self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_title_delay_time.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_title_clear_time.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.frame_settins_background_under_button_settings.configure(fg_color = '#315A37')
+
+            self.button_title_start_time.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_title_stop_time.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_title_minus_hour.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_title_plus_hour.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_title_minus_minut.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_title_plus_minut.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_settings_open_page_settings.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_settings_shut_page_settings.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.button_settings_save_settings.configure(fg_color = '#41904B', hover_color = '#407347')
+
+            self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#41904B', button_color = '#41904B', button_hover_color = '#407347')
+
+            self.optionmenu_settings_mode_color_ui.configure(fg_color = '#41904B', button_color = '#41904B', button_hover_color = '#407347')
+
+            self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#41904B', button_color = '#41904B', button_hover_color = '#407347')
+
+            self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#41904B', button_color = '#41904B', button_hover_color = '#407347')
                 
-            self.stop_b.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.hour_minus_button.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.hour_plus_button.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.minut_minus_button.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.minut_plus_button.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.setings_b.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.close.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.save.configure(fg_color = '#346EBA',
-                                     hover_color = '#3A5B87')
-            self.option_themes.configure(fg_color = '#346EBA', 
-                    button_color = '#346EBA', button_hover_color = '#3A5B87')
-            self.option_colors.configure(fg_color = '#346EBA', 
-                    button_color = '#346EBA', button_hover_color = '#3A5B87')
-            self.otk.configure(fg_color = '#346EBA', 
-                    button_color = '#346EBA', button_hover_color = '#3A5B87')
-            self.act.configure(fg_color = '#346EBA', 
-                    button_color = '#346EBA', button_hover_color = '#3A5B87')            
+ 
+        elif self.open_file_optionmenu_mode_color_ui == 'Оранжевый':
 
-        elif self.color == 'Красный':
-                # красный: #D65656  #B04C4C
+            self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#C4834D', hover_color = '#8F623C')
 
-            self.check_cpu.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.delay.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.clear.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.frame_6.configure(fg_color = '#723131')   
-            self.str_b.configure(fg_color = '#D65656',    # цвет в целом
-                                     hover_color = '#B04C4C') # цвет при наведении
-                
-            self.stop_b.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.hour_minus_button.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.hour_plus_button.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.minut_minus_button.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.minut_plus_button.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.setings_b.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.close.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.save.configure(fg_color = '#D65656',
-                                     hover_color = '#B04C4C')
-            self.option_themes.configure(fg_color = '#D65656', 
-                    button_color = '#D65656', button_hover_color = '#B04C4C')
-            self.option_colors.configure(fg_color = '#D65656', 
-                    button_color = '#D65656', button_hover_color = '#B04C4C')
-            self.otk.configure(fg_color = '#D65656', 
-                    button_color = '#D65656', button_hover_color = '#B04C4C')
-            self.act.configure(fg_color = '#D65656', 
-                    button_color = '#D65656', button_hover_color = '#B04C4C')
+            self.button_title_delay_time.configure(fg_color = '#C4834D', hover_color = '#8F623C')
 
-        elif self.color == 'Зеленый':
-                # зеленый: #41904B  #407347  #315A37
+            self.button_title_clear_time.configure(fg_color = '#C4834D', hover_color = '#8F623C')
 
-            self.check_cpu.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.delay.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.clear.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.frame_6.configure(fg_color = '#315A37')
-            self.str_b.configure(fg_color = '#41904B',    # цвет в целом
-                                     hover_color = '#407347') # цвет при наведении
-                
-            self.stop_b.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.hour_minus_button.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.hour_plus_button.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.minut_minus_button.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.minut_plus_button.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.setings_b.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.close.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.save.configure(fg_color = '#41904B',
-                                     hover_color = '#407347')
-            self.option_themes.configure(fg_color = '#41904B', 
-                    button_color = '#41904B', button_hover_color = '#407347')
-            self.option_colors.configure(fg_color = '#41904B', 
-                    button_color = '#41904B', button_hover_color = '#407347')
-            self.otk.configure(fg_color = '#41904B', 
-                    button_color = '#41904B', button_hover_color = '#407347')
-            self.act.configure(fg_color = '#41904B', 
-                    button_color = '#41904B', button_hover_color = '#407347')
-                
+            self.frame_settins_background_under_button_settings.configure(fg_color = '#61432A')
 
-        elif self.color == 'Оранжевый':
-                # оранжевый: #C4834D  #8F623C  #61432A
+            self.button_title_start_time.configure(fg_color = '#C4834D', hover_color = '#8F623C')
 
-            self.check_cpu.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.delay.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.clear.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.frame_6.configure(fg_color = '#61432A')
-            self.str_b.configure(fg_color = '#C4834D',    # цвет в целом
-                                     hover_color = '#8F623C') # цвет при наведении
-                
-            self.stop_b.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.hour_minus_button.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.hour_plus_button.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.minut_minus_button.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.minut_plus_button.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.setings_b.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.close.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.save.configure(fg_color = '#C4834D',
-                                     hover_color = '#8F623C')
-            self.option_themes.configure(fg_color = '#C4834D', 
-                    button_color = '#C4834D', button_hover_color = '#8F623C')
-            self.option_colors.configure(fg_color = '#C4834D', 
-                    button_color = '#C4834D', button_hover_color = '#8F623C')
-            self.otk.configure(fg_color = '#C4834D', 
-                    button_color = '#C4834D', button_hover_color = '#8F623C')
-            self.act.configure(fg_color = '#C4834D', 
-                    button_color = '#C4834D', button_hover_color = '#8F623C')
+            self.button_title_stop_time.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+            self.button_title_minus_hour.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+            self.button_title_plus_hour.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+            self.button_title_minus_minut.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+            self.button_title_plus_minut.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+            
+            self.button_settings_open_page_settings.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+            self.button_settings_shut_page_settings.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+            self.button_settings_save_settings.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+
+            self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#C4834D', button_color = '#C4834D', button_hover_color = '#8F623C')
+
+            self.optionmenu_settings_mode_color_ui.configure(fg_color = '#C4834D', button_color = '#C4834D', button_hover_color = '#8F623C')
+
+            self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#C4834D', button_color = '#C4834D', button_hover_color = '#8F623C')
+
+            self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#C4834D', button_color = '#C4834D', button_hover_color = '#8F623C')
                 
 
-        elif self.color == 'Фиолетовый':
-                # фиолетовый: #9250DE  #5B3982  #462B64
+        elif self.open_file_optionmenu_mode_color_ui == 'Фиолетовый':
 
-            self.check_cpu.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.delay.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.clear.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.frame_6.configure(fg_color = '#462B64')
-            self.str_b.configure(fg_color = '#9250DE',    # цвет в целом
-                                     hover_color = '#5B3982') # цвет при наведении
-                
-                
-            self.stop_b.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.hour_minus_button.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.hour_plus_button.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.minut_minus_button.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.minut_plus_button.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.setings_b.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.close.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.save.configure(fg_color = '#9250DE',
-                                     hover_color = '#5B3982')
-            self.option_themes.configure(fg_color = '#9250DE', 
-                    button_color = '#9250DE', button_hover_color = '#5B3982')
-            self.option_colors.configure(fg_color = '#9250DE', 
-                    button_color = '#9250DE', button_hover_color = '#5B3982')
-            self.otk.configure(fg_color = '#9250DE', 
-                    button_color = '#9250DE', button_hover_color = '#5B3982')
-            self.act.configure(fg_color = '#9250DE', 
-                    button_color = '#9250DE', button_hover_color = '#5B3982')
-                
+            self.checkbox_settings_mode_auto_hibernation.configure(fg_color = '#9250DE', hover_color = '#5B3982')
 
-        if self.f_theme == 'Т':
+            self.button_title_delay_time.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+            self.button_title_clear_time.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+            self.frame_settins_background_under_button_settings.configure(fg_color = '#462B64')
+
+            self.button_title_start_time.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+            self.button_title_stop_time.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+            self.button_title_minus_hour.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+            self.button_title_plus_hour.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+            self.button_title_minus_minut.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+
+            self.button_title_plus_minut.configure(fg_color = '#9250DE',hover_color = '#5B3982')
+
+            self.button_settings_open_page_settings.configure(fg_color = '#9250DE',hover_color = '#5B3982')
+
+            self.button_settings_shut_page_settings.configure(fg_color = '#9250DE',hover_color = '#5B3982')
+
+            self.button_settings_save_settings.configure(fg_color = '#9250DE',hover_color = '#5B3982')
+
+            self.optionmenu_settings_mode_themes_ui.configure(fg_color = '#9250DE', button_color = '#9250DE', button_hover_color = '#5B3982')
+
+            self.optionmenu_settings_mode_color_ui.configure(fg_color = '#9250DE', button_color = '#9250DE', button_hover_color = '#5B3982')
+
+            self.optionmenu_settings_mode_countdown_time.configure(fg_color = '#9250DE', button_color = '#9250DE', button_hover_color = '#5B3982')
+
+            self.optionmenu_settings_mode_act_after_time.configure(fg_color = '#9250DE', button_color = '#9250DE', button_hover_color = '#5B3982')
+
+
+        if self.open_file_optionmenu_mode_themes_ui == 'Т':
             customtkinter.set_appearance_mode('Dark')
-            self.frame_1.configure(fg_color = '#2E2E2E')
-            self.frame_2.configure(fg_color = '#2E2E2E')
-            self.frame_3.configure(fg_color = '#2E2E2E')
-            self.frame_4.configure(fg_color = '#2E2E2E')
-            self.frame_5.configure(fg_color = '#2E2E2E')
-            self.hour_text.configure(fg_color = '#2E2E2E')
-            self.minut_text.configure(fg_color = '#2E2E2E')
-            self.under_delay.configure(fg_color = '#2E2E2E')
+
+            self.frame_title_background_left_side.configure(fg_color = '#2E2E2E')
+            self.frame_title_background_delay.configure(fg_color = '#2E2E2E')
+            self.frame_settings_background_under_button_settings.configure(fg_color = '#2E2E2E')
+            self.frame_settings_background_left_side.configure(fg_color = '#2E2E2E')
+            self.frame_settings_background_right_side.configure(fg_color = '#2E2E2E')
+
+            self.label_title_designation_hours.configure(fg_color = '#2E2E2E')
+            self.label_title_designaton_minuts.configure(fg_color = '#2E2E2E')
 
 
-        elif self.f_theme == 'С':
+        elif self.open_file_optionmenu_mode_themes_ui == 'С':
             customtkinter.set_appearance_mode('Light')
-            self.frame_1.configure(fg_color = '#D6D6D6')
-            self.frame_2.configure(fg_color = '#D6D6D6')
-            self.frame_3.configure(fg_color = '#D6D6D6')
-            self.frame_4.configure(fg_color = '#D6D6D6')
-            self.frame_5.configure(fg_color = '#D6D6D6')
-            self.hour_text.configure(fg_color = '#D6D6D6')
-            self.minut_text.configure(fg_color = '#D6D6D6')
-            self.under_delay.configure(fg_color = '#D6D6D6')
+
+            self.frame_title_background_delay.configure(fg_color = '#D6D6D6')
+            self.frame_title_background_left_side.configure(fg_color = '#D6D6D6')
+            self.frame_settings_background_under_button_settings.configure(fg_color = '#D6D6D6')
+            self.frame_settings_background_left_side.configure(fg_color = '#D6D6D6')
+            self.frame_settings_background_right_side.configure(fg_color = '#D6D6D6')
+
+            self.label_title_designation_hours.configure(fg_color = '#D6D6D6')
+            self.label_title_designaton_minuts.configure(fg_color = '#D6D6D6')
+            
+
+        if self.open_file_optionmenu_mode_countdown_time == 'М':
+
+            self.label_title_designation_hours.configure(text = 'Часы:')
+            self.label_title_designaton_minuts.configure(text = 'Минуты:')
+
+            self.label_title_unit_time_hours.configure(text = 'H')
+            self.label_title_unit_time_minuts.configure(text = 'M')
+
+            self.label_title_designation_hours.place(x = 104, y = 2)
+            self.label_title_designaton_minuts.place(x = 92, y = 72)
+
+        elif self.open_file_optionmenu_mode_countdown_time == 'С':
+
+            self.label_title_designation_hours.configure(text = 'Минуты:')
+            self.label_title_designaton_minuts.configure(text = 'Секунды:')
+
+            self.label_title_unit_time_hours.configure(text = 'M')
+            self.label_title_unit_time_minuts.configure(text = 'S')
+
+            self.label_title_designation_hours.place(x = 92, y = 2)
+            self.label_title_designaton_minuts.place(x = 89, y = 72)
 
 
-        if self.f_otk == 'М':
-            self.hour_text.configure(text = 'Часы:')
-            self.minut_text.configure(text = 'Минуты:')
+        if self.value_optionmenu_mode_countdown_time.get()[0] == 'М':
+            self.value_for_countwond_times = 60000
 
-            self.hour_t.configure(text = 'H')
-            self.minut_t.configure(text = 'M')
-
-            self.hour_text.place(x = 104, y = 2)
-            self.minut_text.place(x = 92, y = 72)
-        elif self.f_otk == 'С':
-            self.hour_text.configure(text = 'Минуты:')
-            self.minut_text.configure(text = 'Секунды:')
-
-            self.hour_t.configure(text = 'M')
-            self.minut_t.configure(text = 'S')
-
-            self.hour_text.place(x = 92, y = 2)
-            self.minut_text.place(x = 89, y = 72)
+        elif self.value_optionmenu_mode_countdown_time.get()[0] == 'С':
+            self.value_for_countwond_times = 1000
 
 
-        if self.otk_var.get()[0] == 'М':
-            self.otkq = 60000
-        elif self.otk_var.get()[0] == 'С':
-            self.otkq = 1000
-
-
-        if self.choise_act.get()[0] == 'Г':
+        if self.value_optionmenu_mode_act_after_time.get()[0] == 'Г':
             self.command = 'shutdown /h'
-        elif self.choise_act.get()[0] == 'О':
+
+        elif self.value_optionmenu_mode_act_after_time.get()[0] == 'О':
             self.command = 'shutdown /s /t 0'
-        elif self.choise_act.get()[0] == 'П':
+
+        elif self.value_optionmenu_mode_act_after_time.get()[0] == 'П':
             self.command = 'shutdown /r /t 0'
 
         
-        if self.f_cpu == 'n':
-            self.check_var.set('on')
-            self.check_values()
-        elif self.f_cpu == 'f':
-            self.check_var.set('off')
+        if self.open_file_checkbox_mode_auto_hibernation == 'n':
+            self.value_checkbox_mode_auto_hibernation.set('on')
+            self.function_auto_hibernation()
+
+        elif self.open_file_checkbox_mode_auto_hibernation == 'f':
+            self.value_checkbox_mode_auto_hibernation.set('off')
 
 
-        self.hour = 0
-        self.minut = 0
-        self.star_time = False
-        self.stop = 1
-
-        self.stop_time_count = 0
+        self.amount_hours_out_of_entry = 0
+        self.amount_minuts_out_of_entry = 0
+        self.point_for_start_or_stop_times = False
+        self.time_stop_counter = 1
 
 
     def start_monitoring(self):
         try:
-            time_value = int(self.check_entry.get())
-            if time_value < 60:
+
+            amount_the_time = int(self.entry_settings_auto_shutdown.get())
+
+            if amount_the_time < 60:
+                
                 msbox.showwarning('Предупреждение', 'Минимальное время - 60 секунд')
-                self.check_var.set('off')
+                self.value_checkbox_mode_auto_hibernation.set('off')
                 return
+            
         except ValueError:
+
             msbox.showwarning('Ошибка', 'Введите число')
-            self.check_var.set('off')
+            self.value_checkbox_mode_auto_hibernation.set('off')
             return
 
-        self.check_entry.configure(state = 'disabled')
-        if self.check_var.get() == 'on':
-            self.monitor_cpu = True
-            self.count_time = int(self.check_entry.get())
-            self.time_now = 0
+        self.entry_settings_auto_shutdown.configure(state = 'disabled')
+
+        if self.value_checkbox_mode_auto_hibernation.get() == 'on':
+
+            self.giving_the_value_out_of_cpu = True
+            self.amount_time_for_auto_shutdown = int(self.entry_settings_auto_shutdown.get())
+            self.time_on_the_moment = 0
             self.cpu_check_start()
 
         else:
             self.stop_monitoring()
 
+
     def stop_monitoring(self):
-        self.check_entry.configure(state = 'normal')
-        self.minitor_cpu = False
+
+        self.entry_settings_auto_shutdown.configure(state = 'normal')
+        self.giving_the_value_out_of_cpu = False
         self.after_cancel(self.cpu_act)
         self.cpu_act = None
 
+
     def cpu_check_start(self):
+
         cpu_load = psutil.cpu_percent()
-        if cpu_load < 13:
-            self.time_now += 1
-            print(f'Cpu load: {cpu_load}% | {self.time_now} seconds left')
 
+        if cpu_load < 15:
 
-            if self.time_now == self.count_time:
-                self.monitor_cpu = False
+            self.time_on_the_moment += 1
+            print(f'Cpu load: {cpu_load}% | {self.time_on_the_moment} seconds left')
+
+            if self.time_on_the_moment == self.amount_time_for_auto_shutdown:
+
+                self.giving_the_value_out_of_cpu = False
                 self.cpu_act = None
-                self.time_now = 0
+                self.time_on_the_moment = 0
                 self.shutdown()
 
         else:
-            if self.time_now > 0:
-                self.time_now = 0
+            if self.time_on_the_moment > 0:
+                self.time_on_the_moment = 0
 
         self.cpu_act = self.after(1000, self.cpu_check_start)
 
+
     def shutdown(self):
-        print('Гибернация')
         os.system('shutdown /h')
 
-    def check_values(self):
-        if self.check_var.get() == 'on':
-            print(f'Turn {self.check_var.get()} the processor load check')
-        else:
-            print(f'Disabling {self.check_var.get()} the processor load check')
 
-        if self.check_var.get() == 'on':
+    def function_auto_hibernation(self):
+
+        if self.value_checkbox_mode_auto_hibernation.get() == 'on':
+            print('Turn on the processor load check')
             self.start_monitoring()
+        
         else:
-                self.stop_monitoring()
-
-
-
+            print('Disabling the processor load check')
+            self.stop_monitoring()
 
 
 # Функция для оставноки времени.Содержится 4 почти одинаковых блока кода,
 # каждый из которых нужен для воизбеждания багов и проблем в целом в работе
 # Например, отключаются кнопки интерфейса, когда время идет, 
-# тк при взаимодействии с ними могут время может остановиться, перетать идти и
+# тк при взаимодействии с ними могут время может остановиться, перестать идти и
 # и подобные проблемы. чтобы время продолжало идти после оставноки, использовалась
-# функция number(), которая просто ведет счет времени на экране
-    def stoped(self):
+# функция function_count_time(), которая просто ведет счет времени на экране
+    def function_stop_time(self):
+
+        if self.value_optionmenu_mode_countdown_time.get() == 'Минутам':
+            self.value_for_countwond_times = 60000
+            
+        elif self.value_optionmenu_mode_countdown_time.get() == 'Секундам':
+            self.value_for_countwond_times = 1000
 
 
-        if self.otk_var.get() == 'Минутам':
-            self.otkq = 60000
-        elif self.otk_var.get() == 'Секундам':
-            self.otkq = 1000
+        if self.time_stop_counter % 2 == 1:
 
 
-        if self.stop % 2 == 1:
-            self.stop += 1
-            self.star_time = False
+            self.time_stop_counter += 1
+            self.point_for_start_or_stop_times = False
 
-            self.stop_b.configure(text = 'Возобновить')
-            self.check_cpu.configure(state = 'normal')
-            self.clear.configure(state = 'normal')
-            self.otk.configure(state = 'normal')
-            self.entry_hour.configure(state = 'normal')
-            self.entry_minut.configure(state = 'normal')
-            self.hour_minus_button.configure(state = 'normal')
-            self.hour_plus_button.configure(state = 'normal')
-            self.minut_minus_button.configure(state = 'normal')
-            self.minut_plus_button.configure(state = 'normal')
+            self.button_title_stop_time.configure(text = 'Возобновить')
+            self.button_title_plus_hour.configure(state = 'normal')
+            self.button_title_minus_hour.configure(state = 'normal')
+            self.button_title_plus_minut.configure(state = 'normal')
+            self.button_title_minus_minut.configure(state = 'normal')
+            self.button_title_clear_time.configure(state = 'normal')
 
-            h = int(self.en_h.get())
-            m = int(self.en_m.get())
+            self.entry_title_accept_hours.configure(state = 'normal')
+            self.entry_title_accept_minuts.configure(state = 'normal')
 
-            entry_h = int(self.entry_hour.get())
-            entry_m = int(self.entry_minut.get())
+            self.checkbox_settings_mode_auto_hibernation.configure(state = 'normal')
+            self.value_checkbox_mode_auto_hibernation.set('on')
+            self.start_monitoring()
 
-            if int(self.entry_hour.get()) != h or int(self.entry_minut.get()) != m:
+            self.optionmenu_settings_mode_countdown_time.configure(state = 'normal')
+
+
+            hours_out_of_under_title = int(self.entry_under_title_for_function_stop_time_hours.get())
+            minuts_out_of_under_title = int(self.entry_under_title_for_function_stop_time_minuts.get())
+
+            got_the_hours_out_of_entry = int(self.entry_title_accept_hours.get())
+            got_the_minuts_out_of_entry = int(self.entry_title_accept_minuts.get())
+
+
+            if got_the_hours_out_of_entry != hours_out_of_under_title or got_the_minuts_out_of_entry != minuts_out_of_under_title:
                 
-                self.h = int(self.entry_hour.get()) * 60
-                self.m = int(self.entry_minut.get())
-                self.time_sum = self.h + self.m
-
-                self.en_h.delete(0, 25)
-                self.en_m.delete(0, 25)
-                self.en_h.insert(0, entry_h)
-                self.en_m.insert(0, entry_m)
                 
+                self.got_hours_in_minuts = got_the_hours_out_of_entry * 60
+                self.got_minuts_in_minuts = got_the_minuts_out_of_entry
+                
+                self.summa_hours_and_minuts_for_convetison_in_minuts = self.got_hours_in_minuts + self.got_minuts_in_minuts
+
+                self.entry_under_title_for_function_stop_time_hours.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_minuts.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_hours.insert(0, got_the_hours_out_of_entry)
+                self.entry_under_title_for_function_stop_time_minuts.insert(0, got_the_minuts_out_of_entry)
 
 
-                if self.star_time:
-                    if 0 < self.time_sum < 6001:
-                        self.time_sum -= 1
-                        self.hour = str(self.time_sum // 60)
-                        self.minut = str(self.time_sum % 60)
+                if self.point_for_start_or_stop_times:
 
-                        self.vis_entry.delete(0, 25)
-                        self.vis_entry_2.delete(0, 25)
-                        self.vis_entry.insert(0, self.hour)
-                        self.vis_entry_2.insert(0, self.minut)
+                    if 0 < self.summa_hours_and_minuts_for_convetison_in_minuts < 6001:
 
-                        if len(self.hour) == 1 and len(self.minut) == 1:
-                            self.time_out_h.configure(text = f'0{self.hour}')
-                            self.time_out_m.configure(text = f'0{self.minut}')
-                        elif len(self.hour) == 1 and len(self.minut) != 1:
-                            self.time_out_h.configure(text = f'0{self.hour}')
-                            self.time_out_m.configure(text = self.minut)
-                        elif len(self.hour) != 1 and len(self.minut) == 1:
-                            self.time_out_h.configure(text = self.hour)
-                            self.time_out_m.configure(text = f'0{self.minut}')
+                        self.summa_hours_and_minuts_for_convetison_in_minuts -= 1
+                        
+                        self.amount_hours_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts // 60)
+                        self.amount_minuts_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts % 60)
+
+
+                        if len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) == 1:
+                            self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                            self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        
+                        elif len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) != 1:
+                            self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                            self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        
+                        elif len(self.amount_hours_out_of_entry) != 1 and len(self.amount_minuts_out_of_entry) == 1:
+                            self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                            self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        
                         else:
-                            self.time_out_h.configure(text = self.hour)
-                            self.time_out_m.configure(text = self.minut)
-                        self.after(self.otkq, self.number)
-
-                    elif self.time_sum >= 6001:
-                        self.star_time = False
-                        self.entry_hour.delete(0, 25)
-                        self.entry_minut.delete(0 ,25)
-                        self.entry_hour.insert(0, 0)
-                        self.entry_minut.insert(0, 0)
-                        self.time_out_h.configure(text = '00')
-                        self.time_out_m.configure(text = '00')
-                        print('1) The input field "entry_hour" and "entry_minut" is cleared')
+                            self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                            self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        
+                        self.after(self.value_for_countwond_times, self.function_count_time)
 
 
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts >= 6001:
 
-                    if self.otk_var.get() == 'Минутам':
-                        if self.time_sum == 30:
-                            msbox.showinfo('Оповещение', 'Осталось 30 минут!')
-
-                        elif self.time_sum == 10:
-                            msbox.showinfo('Оповещение', 'Осталось 10 минут!')
-                            
-                        elif self.time_sum == 5:
-                            msbox.showinfo('Оповещение', 'Осталось 5 минут!')
-
-                        elif self.time_sum == 1:
-                            msbox.showinfo('Оповещение', 'Осталось 1 минута!')
-
-                    elif self.otk_var.get() == 'Секундам':
-                        if self.time_sum == 60:
-                            msbox.showinfo('Оповещение', 'Осталась 1 минута!')
-
-                        elif self.time_sum == 30:
-                            msbox.showinfo('Оповещение', 'Осталось 30 секунд!')
-
-                        elif self.time_sum == 10:
-                            msbox.showinfo('Оповещение', 'Осталось 10 секунд!')
-                            
-                        elif self.time_sum == 5:
-                            msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
+                        self.point_for_start_or_stop_times = False
+                        self.entry_title_accept_hours.delete(0, 25)
+                        self.entry_title_accept_minuts.delete(0 ,25)
+                        self.entry_title_accept_hours.insert(0, 0)
+                        self.entry_title_accept_minuts.insert(0, 0)
+                        self.label_title_count_time_hours.configure(text = '00')
+                        self.label_title_count_time_minuts.configure(text = '00')
+                        
+                        print('1) The input field "entry_title_accept_hours" and "entry_title_accept_minuts" is button_title_clear_timeed')
 
 
-            elif int(self.entry_hour.get()) == h or int(self.entry_minut.get()) == m:
+            elif got_the_hours_out_of_entry == hours_out_of_under_title or got_the_minuts_out_of_entry == minuts_out_of_under_title:
 
-                self.en_h.delete(0, 25)
-                self.en_m.delete(0, 25)
-                self.en_h.insert(0, entry_h)
-                self.en_m.insert(0, entry_m)
+                self.entry_under_title_for_function_stop_time_hours.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_minuts.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_hours.insert(0, got_the_hours_out_of_entry)
+                self.entry_under_title_for_function_stop_time_minuts.insert(0, got_the_minuts_out_of_entry)
 
 
-                if self.star_time:
-                    if 0 < self.time_sum < 6001:
-                        self.time_sum -= 1
-                        self.hour = str(self.time_sum // 60)
-                        self.minut = str(self.time_sum % 60)
+                if self.point_for_start_or_stop_times:
+                    
+                    if 0 < self.summa_hours_and_minuts_for_convetison_in_minuts < 6001:
 
-                        self.vis_entry.delete(0, 25)
-                        self.vis_entry_2.delete(0, 25)
-                        self.vis_entry.insert(0, self.hour)
-                        self.vis_entry_2.insert(0, self.minut)
+                        self.summa_hours_and_minuts_for_convetison_in_minuts -= 1
+                        
+                        self.amount_hours_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts // 60)
+                        self.amount_minuts_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts % 60)
 
-                        if len(self.hour) == 1 and len(self.minut) == 1:
-                            self.time_out_h.configure(text = f'0{self.hour}')
-                            self.time_out_m.configure(text = f'0{self.minut}')
-                        elif len(self.hour) == 1 and len(self.minut) != 1:
-                            self.time_out_h.configure(text = f'0{self.hour}')
-                            self.time_out_m.configure(text = self.minut)
-                        elif len(self.hour) != 1 and len(self.minut) == 1:
-                            self.time_out_h.configure(text = self.hour)
-                            self.time_out_m.configure(text = f'0{self.minut}')
+
+                        if len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) == 1:
+                            self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                            self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        
+                        elif len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) != 1:
+                            self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                            self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        
+                        elif len(self.amount_hours_out_of_entry) != 1 and len(self.amount_minuts_out_of_entry) == 1:
+                            self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                            self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        
                         else:
-                            self.time_out_h.configure(text = self.hour)
-                            self.time_out_m.configure(text = self.minut)
-                        self.after(self.otkq, self.number)
+                            self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                            self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        
+                        self.after(self.value_for_countwond_times, self.function_count_time)
 
-                    elif self.time_sum >= 6001:
-                        self.star_time = False
-                        self.entry_hour.delete(0, 25)
-                        self.entry_minut.delete(0 ,25)
-                        self.entry_hour.insert(0, 0)
-                        self.entry_minut.insert(0, 0)
-                        self.time_out_h.configure(text = '00')
-                        self.time_out_m.configure(text = '00')
-                        print('2) The input field "entry_hour" and "entry_minut" is cleared')
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts >= 6001:
 
-                    if self.otk_var.get() == 'Минутам':
-                        if self.time_sum == 30:
-                            msbox.showinfo('Оповещение', 'Осталось 30 минут!')
-
-                        elif self.time_sum == 10:
-                            msbox.showinfo('Оповещение', 'Осталось 10 минут!')
-                            
-                        elif self.time_sum == 5:
-                            msbox.showinfo('Оповещение', 'Осталось 5 минут!')
-
-                        elif self.time_sum == 1:
-                            msbox.showinfo('Оповещение', 'Осталось 1 минута!')
-
-                    elif self.otk_var.get() == 'Секундам':
-                        if self.time_sum == 60:
-                            msbox.showinfo('Оповещение', 'Осталась 1 минута!')
-
-                        elif self.time_sum == 30:
-                            msbox.showinfo('Оповещение', 'Осталось 30 секунд!')
-
-                        elif self.time_sum == 10:
-                            msbox.showinfo('Оповещение', 'Осталось 10 секунд!')
-                            
-                        elif self.time_sum == 5:
-                            msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
+                        self.point_for_start_or_stop_times = False
+                        self.entry_title_accept_hours.delete(0, 25)
+                        self.entry_title_accept_minuts.delete(0 ,25)
+                        self.entry_title_accept_hours.insert(0, 0)
+                        self.entry_title_accept_minuts.insert(0, 0)
+                        self.label_title_count_time_hours.configure(text = '00')
+                        self.label_title_count_time_minuts.configure(text = '00')
+                        
+                        print('2) The input field "entry_title_accept_hours" and "entry_title_accept_minuts" is button_title_clear_timeed')
 
 
-        elif self.stop % 2 == 0:
-            self.stop -= 1
-            self.star_time = True
+        elif self.time_stop_counter % 2 == 0:
 
-            self.stop_b.configure(text = 'Остановить')
+            self.time_stop_counter -= 1
+            self.point_for_start_or_stop_times = True
 
-            if self.check_var.get() == 'on':
+
+            if self.value_checkbox_mode_auto_hibernation.get() == 'on':
                 self.stop_monitoring()
-                self.check_var.set('off')
+                self.value_checkbox_mode_auto_hibernation.set('off')
+            
             else:
                 pass
-            self.check_cpu.configure(state = 'disabled')
 
-            self.delay.configure(state = 'normal')
-            self.clear.configure(state = 'disabled')
-            self.otk.configure(state = 'disabled')
-            self.hour_minus_button.configure(state = 'disabled')
-            self.hour_plus_button.configure(state = 'disabled')
-            self.minut_minus_button.configure(state = 'disabled')
-            self.minut_plus_button.configure(state = 'disabled')
+            self.button_title_stop_time.configure(text = 'Остановить')
+            self.button_title_plus_hour.configure(state = 'disabled')
+            self.button_title_minus_hour.configure(state = 'disabled')
+            self.button_title_plus_minut.configure(state = 'disabled')
+            self.button_title_minus_minut.configure(state = 'disabled')
+            self.button_title_clear_time.configure(state = 'disabled')
+            self.button_title_delay_time.configure(state = 'normal')
 
-            h = int(self.en_h.get())
-            m = int(self.en_m.get())
+            self.checkbox_settings_mode_auto_hibernation.configure(state = 'disabled')
+            
+            self.optionmenu_settings_mode_countdown_time.configure(state = 'disabled')
+            
 
-            entry_h = int(self.entry_hour.get())
-            entry_m = int(self.entry_minut.get())
+            hours_out_of_under_title = int(self.entry_under_title_for_function_stop_time_hours.get())
+            minuts_out_of_under_title = int(self.entry_under_title_for_function_stop_time_minuts.get())
 
-
-            if int(self.entry_hour.get()) != h or int(self.entry_minut.get()) != m:
-
-                self.h = int(self.entry_hour.get()) * 60
-                self.m = int(self.entry_minut.get())
-                self.time_sum = self.h + self.m
-
-                self.en_h.delete(0, 25)
-                self.en_m.delete(0, 25)
-                self.en_h.insert(0, entry_h)
-                self.en_m.insert(0, entry_m)
+            got_the_hours_out_of_entry = int(self.entry_title_accept_hours.get())
+            got_the_minuts_out_of_entry = int(self.entry_title_accept_minuts.get())
 
 
-                if self.star_time:
-                    if 0 < self.time_sum < 6001:
-                        self.time_sum -= 1
-                        self.hour = str(self.time_sum // 60)
-                        self.minut = str(self.time_sum % 60)
+            if got_the_hours_out_of_entry != hours_out_of_under_title or got_the_minuts_out_of_entry != minuts_out_of_under_title:
 
-                        self.vis_entry.delete(0, 25)
-                        self.vis_entry_2.delete(0, 25)
-                        self.vis_entry.insert(0, self.hour)
-                        self.vis_entry_2.insert(0, self.minut)
 
-                        if len(self.hour) == 1 and len(self.minut) == 1:
-                            self.time_out_h.configure(text = f'0{self.hour}')
-                            self.time_out_m.configure(text = f'0{self.minut}')
-                        elif len(self.hour) == 1 and len(self.minut) != 1:
-                            self.time_out_h.configure(text = f'0{self.hour}')
-                            self.time_out_m.configure(text = self.minut)
-                        elif len(self.hour) != 1 and len(self.minut) == 1:
-                            self.time_out_h.configure(text = self.hour)
-                            self.time_out_m.configure(text = f'0{self.minut}')
+                self.got_hours_in_minuts = got_the_hours_out_of_entry * 60
+                self.got_minuts_in_minuts = got_the_minuts_out_of_entry
+                
+                self.summa_hours_and_minuts_for_convetison_in_minuts = self.got_hours_in_minuts + self.got_minuts_in_minuts
+
+                self.entry_under_title_for_function_stop_time_hours.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_minuts.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_hours.insert(0, got_the_hours_out_of_entry)
+                self.entry_under_title_for_function_stop_time_minuts.insert(0, got_the_minuts_out_of_entry)
+
+
+                if self.point_for_start_or_stop_times:
+
+                    if 0 < self.summa_hours_and_minuts_for_convetison_in_minuts < 6001:
+
+                        self.summa_hours_and_minuts_for_convetison_in_minuts -= 1
+                        
+                        self.amount_hours_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts // 60)
+                        self.amount_minuts_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts % 60)
+
+
+                        if len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) == 1:
+                            self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                            self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        
+                        elif len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) != 1:
+                            self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                            self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        
+                        elif len(self.amount_hours_out_of_entry) != 1 and len(self.amount_minuts_out_of_entry) == 1:
+                            self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                            self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        
                         else:
-                            self.time_out_h.configure(text = self.hour)
-                            self.time_out_m.configure(text = self.minut)
-                        self.after(self.otkq, self.number)
+                            self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                            self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        
+                        self.after(self.value_for_countwond_times, self.function_count_time)
 
-                    elif self.time_sum >= 6001:
-                        self.star_time = True
-                        self.entry_hour.delete(0, 25)
-                        self.entry_minut.delete(0 ,25)
-                        self.entry_hour.insert(0, 0)
-                        self.entry_minut.insert(0, 0)
-                        self.time_out_h.configure(text = '00')
-                        self.time_out_m.configure(text = '00')
-                        self.stop_b.configure(text = 'Возобновить')
-                        self.check_cpu.configure(state = 'normal')
-                        self.delay.configure(state = 'disabled')
-                        self.otk.configure(state = 'normal')
-                        self.entry_hour.configure(state = 'normal')
-                        self.entry_minut.configure(state = 'normal')
-                        self.hour_minus_button.configure(state = 'normal')
-                        self.hour_plus_button.configure(state = 'normal')
-                        self.minut_minus_button.configure(state = 'normal')
-                        self.minut_plus_button.configure(state = 'normal')
-                        self.setings_b.configure(state = 'normal')
-                        print('3) The input field "entry_hour" and "entry_minut" is cleared')
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts >= 6001:
+
+                        self.point_for_start_or_stop_times = True
+                        
+                        self.button_title_stop_time.configure(text = 'Возобновить')
+                        self.button_title_plus_hour.configure(state = 'normal')
+                        self.button_title_minus_hour.configure(state = 'normal')
+                        self.button_title_plus_minut.configure(state = 'normal')
+                        self.button_title_minus_minut.configure(state = 'normal')
+                        self.button_title_delay_time.configure(state = 'disabled')
+                        
+                        self.entry_title_accept_hours.configure(state = 'normal')
+                        self.entry_title_accept_minuts.configure(state = 'normal')
+                        
+                        self.checkbox_settings_mode_auto_hibernation.configure(state = 'normal')
+                        
+                        self.optionmenu_settings_mode_countdown_time.configure(state = 'normal')
+                        
+                        self.label_title_count_time_hours.configure(text = '00')
+                        self.label_title_count_time_minuts.configure(text = '00')
+                        
+                        self.entry_title_accept_hours.delete(0, 25)
+                        self.entry_title_accept_minuts.delete(0 ,25)
+                        self.entry_title_accept_hours.insert(0, 0)
+                        self.entry_title_accept_minuts.insert(0, 0)
+                        
+                        print('3) The input field "entry_title_accept_hours" and "entry_title_accept_minuts" is button_title_clear_timeed')
 
 
-
-                    if self.otk_var.get() == 'Минутам':
-                        if self.time_sum == 30:
+                    if self.value_optionmenu_mode_countdown_time.get() == 'Минутам':
+                        
+                        if self.summa_hours_and_minuts_for_convetison_in_minuts == 30:
                             msbox.showinfo('Оповещение', 'Осталось 30 минут!')
 
-                        elif self.time_sum == 10:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 10:
                             msbox.showinfo('Оповещение', 'Осталось 10 минут!')
                             
-                        elif self.time_sum == 5:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 5:
                             msbox.showinfo('Оповещение', 'Осталось 5 минут!')
 
-                        elif self.time_sum == 1:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 1:
                             msbox.showinfo('Оповещение', 'Осталось 1 минута!')
 
-                    elif self.otk_var.get() == 'Секундам':
-                        if self.time_sum == 60:
+                    elif self.value_optionmenu_mode_countdown_time.get() == 'Секундам':
+                        
+                        if self.summa_hours_and_minuts_for_convetison_in_minuts == 60:
                             msbox.showinfo('Оповещение', 'Осталась 1 минута!')
 
-                        elif self.time_sum == 30:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 30:
                             msbox.showinfo('Оповещение', 'Осталось 30 секунд!')
 
-                        elif self.time_sum == 10:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 10:
                             msbox.showinfo('Оповещение', 'Осталось 10 секунд!')
                             
-                        elif self.time_sum == 5:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 5:
                             msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
 
 
-            elif int(self.entry_hour.get()) == h or int(self.entry_minut.get()) == m:
+            elif got_the_hours_out_of_entry == hours_out_of_under_title or got_the_minuts_out_of_entry == minuts_out_of_under_title:
 
-                self.en_h.delete(0, 25)
-                self.en_m.delete(0, 25)
-                self.en_h.insert(0, entry_h)
-                self.en_m.insert(0, entry_m)
+                self.entry_under_title_for_function_stop_time_hours.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_minuts.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_hours.insert(0, got_the_hours_out_of_entry)
+                self.entry_under_title_for_function_stop_time_minuts.insert(0, got_the_minuts_out_of_entry)
 
 
-                if self.star_time:
-                    if 0 < self.time_sum < 6001:
-                        self.time_sum -= 1
-                        self.hour = str(self.time_sum // 60)
-                        self.minut = str(self.time_sum % 60)
+                if self.point_for_start_or_stop_times:
+                    
+                    if 0 < self.summa_hours_and_minuts_for_convetison_in_minuts < 6001:
+                        
+                        self.summa_hours_and_minuts_for_convetison_in_minuts -= 1
+                        
+                        self.amount_hours_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts // 60)
+                        self.amount_minuts_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts % 60)
 
-                        self.vis_entry.delete(0, 25)
-                        self.vis_entry_2.delete(0, 25)
-                        self.vis_entry.insert(0, self.hour)
-                        self.vis_entry_2.insert(0, self.minut)
 
-                        if len(self.hour) == 1 and len(self.minut) == 1:
-                            self.time_out_h.configure(text = f'0{self.hour}')
-                            self.time_out_m.configure(text = f'0{self.minut}')
-                        elif len(self.hour) == 1 and len(self.minut) != 1:
-                            self.time_out_h.configure(text = f'0{self.hour}')
-                            self.time_out_m.configure(text = self.minut)
-                        elif len(self.hour) != 1 and len(self.minut) == 1:
-                            self.time_out_h.configure(text = self.hour)
-                            self.time_out_m.configure(text = f'0{self.minut}')
+                        if len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) == 1:
+                            self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                            self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        elif len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) != 1:
+                            self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                            self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        elif len(self.amount_hours_out_of_entry) != 1 and len(self.amount_minuts_out_of_entry) == 1:
+                            self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                            self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
                         else:
-                            self.time_out_h.configure(text = self.hour)
-                            self.time_out_m.configure(text = self.minut)
-                        self.after(self.otkq, self.number)
-
-                    elif self.time_sum >= 6001:
-                        self.star_time = True
-                        self.entry_hour.delete(0, 25)
-                        self.entry_minut.delete(0 ,25)
-                        self.entry_hour.insert(0, 0)
-                        self.entry_minut.insert(0, 0)
-                        self.time_out_h.configure(text = '00')
-                        self.time_out_m.configure(text = '00')
-                        self.stop_b.configure(text = 'Возобновить')
-                        self.check_cpu.configure(state = 'normal')
-                        self.otk.configure(state = 'normal')
-                        self.entry_hour.configure(state = 'normal')
-                        self.entry_minut.configure(state = 'normal')
-                        self.hour_minus_button.configure(state = 'normal')
-                        self.hour_plus_button.configure(state = 'normal')
-                        self.minut_minus_button.configure(state = 'normal')
-                        self.minut_plus_button.configure(state = 'normal')
-                        self.setings_b.configure(state = 'normal')
-                        print('4) The input field "entry_hour" and "entry_minut" is cleared')
+                            self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                            self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                            
+                        self.after(self.value_for_countwond_times, self.function_count_time)
 
 
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts >= 6001:
+                        
+                        self.point_for_start_or_stop_times = True
+                        
+                        self.button_title_stop_time.configure(text = 'Возобновить')
+                        self.button_title_plus_hour.configure(state = 'normal')
+                        self.button_title_minus_hour.configure(state = 'normal')
+                        self.button_title_plus_minut.configure(state = 'normal')
+                        self.button_title_minus_minut.configure(state = 'normal')
+                        self.button_title_delay_time.configure(state = 'disabled')
+                        
+                        self.entry_title_accept_hours.configure(state = 'normal')
+                        self.entry_title_accept_minuts.configure(state = 'normal')
+                        
+                        self.checkbox_settings_mode_auto_hibernation.configure(state = 'normal')
+                        
+                        self.optionmenu_settings_mode_countdown_time.configure(state = 'normal')
+                        
+                        self.label_title_count_time_hours.configure(text = '00')
+                        self.label_title_count_time_minuts.configure(text = '00')
+                        
+                        self.entry_title_accept_hours.delete(0, 25)
+                        self.entry_title_accept_minuts.delete(0 ,25)
+                        self.entry_title_accept_hours.insert(0, 0)
+                        self.entry_title_accept_minuts.insert(0, 0)
+                        
+                        print('4) The input field "entry_title_accept_hours" and "entry_title_accept_minuts" is button_title_clear_timeed')
 
-                    if self.otk_var.get() == 'Минутам':
-                        if self.time_sum == 30:
+
+
+                    if self.value_optionmenu_mode_countdown_time.get() == 'Минутам':
+                        
+                        if self.summa_hours_and_minuts_for_convetison_in_minuts == 30:
                             msbox.showinfo('Оповещение', 'Осталось 30 минут!')
 
-                        elif self.time_sum == 10:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 10:
                             msbox.showinfo('Оповещение', 'Осталось 10 минут!')
                             
-                        elif self.time_sum == 5:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 5:
                             msbox.showinfo('Оповещение', 'Осталось 5 минут!')
 
-                        elif self.time_sum == 1:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 1:
                             msbox.showinfo('Оповещение', 'Осталось 1 минута!')
 
-                    elif self.otk_var.get() == 'Секундам':
-                        if self.time_sum == 60:
+                    elif self.value_optionmenu_mode_countdown_time.get() == 'Секундам':
+                        
+                        if self.summa_hours_and_minuts_for_convetison_in_minuts == 60:
                             msbox.showinfo('Оповещение', 'Осталась 1 минута!')
 
-                        elif self.time_sum == 30:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 30:
                             msbox.showinfo('Оповещение', 'Осталось 30 секунд!')
 
-                        elif self.time_sum == 10:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 10:
                             msbox.showinfo('Оповещение', 'Осталось 10 секунд!')
                             
-                        elif self.time_sum == 5:
+                        elif self.summa_hours_and_minuts_for_convetison_in_minuts == 5:
                             msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
 
-        
 
-
-    # def start_but(self):
-
-# Разбей функцию stoped() на несколько других функций для более широкой настройки
-
+# Разбей функцию function_stop_time() на несколько других функций для более широкой настройки
 
 
 # Функция служит для передачи времени из полей ввода Часов и Минут, также 
 # требуется для отключений виджетов интерфейса для воизбежания багов
 # Функция принимает на вход часы и минуты, переводит в минуты и дальше 
 # используется для подсчета времени до окончания работы программы
+    def function_start_time(self):
+        
+        amount_times_for_start = int(self.entry_title_accept_hours.get()) + int(self.entry_title_accept_minuts.get())
 
+        if not self.point_for_start_or_stop_times:
+            
+            if 0 < amount_times_for_start < 6001:
+                
+                
 
-
-
-    def start_time(self):
-        text = int(self.entry_hour.get()) + int(self.entry_minut.get())
-        if not self.star_time:
-            if 0 < int(text) < 6001:
-                self.check_cpu.configure(state = 'disabled')
-
-                if self.check_var.get() == 'on':
+                if self.value_checkbox_mode_auto_hibernation.get() == 'on':
                     self.stop_monitoring()
-                    self.check_var.set('off')
-                elif self.check_var.get() == 'off':
+                    self.value_checkbox_mode_auto_hibernation.set('off')
+                    
+                elif self.value_checkbox_mode_auto_hibernation.get() == 'off':
                     pass
 
-                self.str_b.configure(state = 'disabled')
-                self.stop_b.configure(state = 'normal')
-                self.delay.configure(state = 'normal')
-                self.otk.configure(state = 'disabled')
-                self.hour_minus_button.configure(state = 'disabled')
-                self.hour_plus_button.configure(state = 'disabled')
-                self.minut_minus_button.configure(state = 'disabled')
-                self.minut_plus_button.configure(state = 'disabled')
+                self.button_title_start_time.configure(state = 'disabled')
+                self.button_title_stop_time.configure(state = 'normal')
+                self.button_title_delay_time.configure(state = 'normal')
+                self.button_title_plus_hour.configure(state = 'disabled')
+                self.button_title_minus_hour.configure(state = 'disabled')
+                self.button_title_plus_minut.configure(state = 'disabled')
+                self.button_title_minus_minut.configure(state = 'disabled')
 
-                self.en_h.delete(0, 25)
-                self.en_m.delete(0, 25)
-                self.en_h.insert(0, self.entry_hour.get())
-                self.en_m.insert(0, self.entry_minut.get())
+                self.checkbox_settings_mode_auto_hibernation.configure(state = 'disabled')
+
+                self.optionmenu_settings_mode_countdown_time.configure(state = 'disabled')
+
+                self.entry_under_title_for_function_stop_time_hours.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_minuts.delete(0, 25)
+                self.entry_under_title_for_function_stop_time_hours.insert(0, self.entry_title_accept_hours.get())
+                self.entry_under_title_for_function_stop_time_minuts.insert(0, self.entry_title_accept_minuts.get())
 
                 try:
-                    time_hour = int(self.entry_hour.get()) * 60
-                    time_minut = int(self.entry_minut.get()) 
-                    self.time_sums = time_minut + time_hour
-                    if self.time_sums > 0:
-                        self.time_sum = self.time_sums
-                        self.star_time = True
-                        self.number()
+                    
+                    self.summa_the_time_fnc_start_time = (int(self.entry_title_accept_hours.get()) * 60) + int(self.entry_title_accept_minuts.get())
+                    
+                    if self.summa_the_time_fnc_start_time > 0:
+                        
+                        self.summa_hours_and_minuts_for_convetison_in_minuts = self.summa_the_time_fnc_start_time
+                        self.point_for_start_or_stop_times = True
+                        self.function_count_time()
+                        
                 except ValueError:
-                    print('error')
-                    self.entry_hour.delete(0, 25)
-                    self.entry_minut.delete(0 ,25)
-                    self.entry_hour.insert(0, 0)
-                    self.entry_minut.insert(0, 0)
-                    self.entry_hour.configure(state = 'disabled')
-                    self.entry_minut.configure(state = 'disabled')
+                    
+                    print('Error')
+                    self.entry_title_accept_hours.delete(0, 25)
+                    self.entry_title_accept_minuts.delete(0 ,25)
+                    self.entry_title_accept_hours.insert(0, 0)
+                    self.entry_title_accept_minuts.insert(0, 0)
+                    self.entry_title_accept_hours.configure(state = 'disabled')
+                    self.entry_title_accept_minuts.configure(state = 'disabled')
             
-            elif text < 0 or text > 6001:
-                self.star_time = False
-                self.entry_hour.delete(0, 25)
-                self.entry_minut.delete(0 ,25)
-                self.entry_hour.insert(0, 0)
-                self.entry_minut.insert(0, 0)
-                self.time_out_h.configure(text = '00')
-                self.time_out_m.configure(text = '00')
-                self.stop_b.configure(text = 'Возобновить')
-                self.check_cpu.configure(state = 'normal')
-                self.delay.configure(state = 'disabled')
-                self.otk.configure(state = 'normal')
-                print('st) The input field "entry_hour" and "entry_minut" is cleared')
+            elif amount_times_for_start < 0 or amount_times_for_start > 6001:
+                
+                self.button_title_stop_time.configure(text = 'Возобновить')
+                
+                
+                
+                
+                self.point_for_start_or_stop_times = False
+                self.button_title_delay_time.configure(state = 'disabled')
+                
+                self.checkbox_settings_mode_auto_hibernation.configure(state = 'normal')
+
+                self.optionmenu_settings_mode_countdown_time.configure(state = 'normal')
+
+                self.entry_title_accept_hours.delete(0, 25)
+                self.entry_title_accept_minuts.delete(0 ,25)
+                self.entry_title_accept_hours.insert(0, 0)
+                self.entry_title_accept_minuts.insert(0, 0)
+                self.label_title_count_time_hours.configure(text = '00')
+                self.label_title_count_time_minuts.configure(text = '00')
+                
+                print('fnc start time) The input field "entry_title_accept_hours" and "entry_title_accept_minuts" is button_title_clear_timeed')
 
         else:
-            print(f't:  {self.star_time}')
+            print(f'fnc start time:  {self.point_for_start_or_stop_times}')
+
 
 # принимает сумму часов и минут в минутах, отображает на экране
 # далее отправляет отдельными окнами уведомления об окончании времени
 # и завершает работу компьютера
+    def function_count_time(self):
+        
+            if self.point_for_start_or_stop_times:
+                
+                if 0 < self.summa_hours_and_minuts_for_convetison_in_minuts < 6001:
+                    
+                    self.summa_hours_and_minuts_for_convetison_in_minuts -= 1
+                    
+                    self.amount_hours_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts // 60)
+                    self.amount_minuts_out_of_entry = str(self.summa_hours_and_minuts_for_convetison_in_minuts % 60)
 
-    def number(self):
-            if self.star_time:
-                if 0 < self.time_sum < 6001:
-                    print(self.time_sum)
-                    self.time_sum -= 1
-                    self.hour = str(self.time_sum // 60)
-                    self.minut = str(self.time_sum % 60)
 
-                    self.vis_entry.delete(0, 25)
-                    self.vis_entry_2.delete(0, 25)
-                    self.vis_entry.insert(0, self.hour)
-                    self.vis_entry_2.insert(0, self.minut)
-
-                    if len(self.hour) == 1 and len(self.minut) == 1:
-                        self.time_out_h.configure(text = f'0{self.hour}')
-                        self.time_out_m.configure(text = f'0{self.minut}')
-                    elif len(self.hour) == 1 and len(self.minut) != 1:
-                        self.time_out_h.configure(text = f'0{self.hour}')
-                        self.time_out_m.configure(text = self.minut)
-                    elif len(self.hour) != 1 and len(self.minut) == 1:
-                        self.time_out_h.configure(text = self.hour)
-                        self.time_out_m.configure(text = f'0{self.minut}')
+                    if len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) == 1:
+                        self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                        self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        
+                    elif len(self.amount_hours_out_of_entry) == 1 and len(self.amount_minuts_out_of_entry) != 1:
+                        self.label_title_count_time_hours.configure(text = f'0{self.amount_hours_out_of_entry}')
+                        self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        
+                    elif len(self.amount_hours_out_of_entry) != 1 and len(self.amount_minuts_out_of_entry) == 1:
+                        self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                        self.label_title_count_time_minuts.configure(text = f'0{self.amount_minuts_out_of_entry}')
+                        
                     else:
-                        self.time_out_h.configure(text = self.hour)
-                        self.time_out_m.configure(text = self.minut)
-                    self.after(self.otkq, self.number)
+                        self.label_title_count_time_hours.configure(text = self.amount_hours_out_of_entry)
+                        self.label_title_count_time_minuts.configure(text = self.amount_minuts_out_of_entry)
+                        
+                    self.after(self.value_for_countwond_times, self.function_count_time)
             
-                elif 0 > self.time_sum or self.time_sum > 6000:
-                    self.star_time = False
-                    self.entry_hour.delete(0, 25)
-                    self.entry_minut.delete(0 ,25)
-                    self.entry_hour.insert(0, 0)
-                    self.entry_minut.insert(0, 0)
-                    self.time_out_h.configure(text = '00')
-                    self.time_out_m.configure(text = '00')
-                    self.stop_b.configure(text = 'Возобновить')
-                    self.check_cpu.configure(state = 'normal')
-                    self.delay.configure(state = 'disabled')
-                    self.otk.configure(state = 'normal')
-                    self.entry_hour.configure(state = 'normal')
-                    self.entry_minut.configure(state = 'normal')
-                    self.hour_minus_button.configure(state = 'normal')
-                    self.hour_plus_button.configure(state = 'normal')
-                    self.minut_minus_button.configure(state = 'normal')
-                    self.minut_plus_button.configure(state = 'normal')
-                    self.setings_b.configure(state = 'normal')
-                    print('number) The input field "entry_hour" and "entry_minut" is cleared')
+
+                elif 0 > self.summa_hours_and_minuts_for_convetison_in_minuts or self.summa_hours_and_minuts_for_convetison_in_minuts > 6000:
+                    
+                    self.point_for_start_or_stop_times = False
+                    
+                    self.button_title_stop_time.configure(text = 'Возобновить')
+                    self.button_title_plus_hour.configure(state = 'normal')
+                    self.button_title_minus_hour.configure(state = 'normal')
+                    self.button_title_plus_minut.configure(state = 'normal')
+                    self.button_title_minus_minut.configure(state = 'normal')
+                    self.button_title_delay_time.configure(state = 'disabled')
+                    
+                    self.entry_title_accept_hours.configure(state = 'normal')
+                    self.entry_title_accept_minuts.configure(state = 'normal')
+                    
+                    self.checkbox_settings_mode_auto_hibernation.configure(state = 'normal')
+                    
+                    self.optionmenu_settings_mode_countdown_time.configure(state = 'normal')
+                    
+                    self.entry_title_accept_hours.delete(0, 25)
+                    self.entry_title_accept_minuts.delete(0 ,25)
+                    self.entry_title_accept_hours.insert(0, 0)
+                    self.entry_title_accept_minuts.insert(0, 0)
+                    self.label_title_count_time_hours.configure(text = '00')
+                    self.label_title_count_time_minuts.configure(text = '00')
+                    
+                    print('function_count_time) The input field "entry_title_accept_hours" and "entry_title_accept_minuts" is button_title_clear_timeed')
+
 
                 else:
-                    self.star_time = False
-                    self.delay.configure(state = 'disabled')
-                    self.otk.configure(state = 'normal')
-                    self.stoped()
+                    
+                    self.point_for_start_or_stop_times = False
+                    self.button_title_delay_time.configure(state = 'disabled')
+                    self.optionmenu_settings_mode_countdown_time.configure(state = 'normal')
+                    self.function_stop_time()
+                    
                     if sys.platform == 'win32':
-                        if self.choise_act.get()[0] == 'Г':
+                        
+                        if self.value_optionmenu_mode_act_after_time.get()[0] == 'Г':
                             print('Гибернация')
                             self.command = 'shutdown /h'
-                        elif self.choise_act.get()[0] == 'О':
+                            
+                        elif self.value_optionmenu_mode_act_after_time.get()[0] == 'О':
                             print('Отключение')
                             self.command = 'shutdown /s /t 0'
-                        elif self.choise_act.get()[0] == 'П':
+                            
+                        elif self.value_optionmenu_mode_act_after_time.get()[0] == 'П':
                             print('Перезагрузка')
                             self.command = 'shutdown /r /t 0'
+                            
                     try:
                         os.system(self.command)
+                        
                     except Exception as e:
                         print(f'Error: {e}')
 
-                if self.otk_var.get() == 'Минутам':
-                    if self.time_sum == 30:
+                if self.value_optionmenu_mode_countdown_time.get() == 'Минутам':
+                    
+                    if self.summa_hours_and_minuts_for_convetison_in_minuts == 30:
                         msbox.showinfo('Оповещение', 'Осталось 30 минут!')
 
-                    elif self.time_sum == 10:
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts == 10:
                         msbox.showinfo('Оповещение', 'Осталось 10 минут!')
                         
-                    elif self.time_sum == 5:
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts == 5:
                         msbox.showinfo('Оповещение', 'Осталось 5 минут!')
 
-                    elif self.time_sum == 1:
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts == 1:
                         msbox.showinfo('Оповещение', 'Осталось 1 минута!')
 
-                elif self.otk_var.get() == 'Секундам':
-                    if self.time_sum == 60:
+                elif self.value_optionmenu_mode_countdown_time.get() == 'Секундам':
+                    
+                    if self.summa_hours_and_minuts_for_convetison_in_minuts == 60:
                         msbox.showinfo('Оповещение', 'Осталась 1 минута!')
 
-                    elif self.time_sum == 30:
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts == 30:
                         msbox.showinfo('Оповещение', 'Осталось 30 секунд!')
 
-                    elif self.time_sum == 10:
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts == 10:
                         msbox.showinfo('Оповещение', 'Осталось 10 секунд!')
                         
-                    elif self.time_sum == 5:
+                    elif self.summa_hours_and_minuts_for_convetison_in_minuts == 5:
                         msbox.showinfo('Оповещение', 'Осталось 5 секунд!')
 
 app = App()
