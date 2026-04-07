@@ -398,9 +398,9 @@ class App(customtkinter.CTk):
 
                 self.frame_settins_background_under_button_settings.configure(fg_color = '#283F5E')
 
-                self.button_title_start.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+                self.button_title_start_time.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
 
-                self.button_title_stop.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
+                self.button_title_stop_time.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
 
                 self.button_title_minus_hour.configure(fg_color = '#346EBA', hover_color = '#3A5B87')
 
@@ -435,9 +435,9 @@ class App(customtkinter.CTk):
 
                 self.frame_settins_background_under_button_settings.configure(fg_color = '#723131')
 
-                self.button_title_start.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+                self.button_title_start_time.configure(fg_color = '#D65656', hover_color = '#B04C4C')
 
-                self.button_title_stop.configure(fg_color = '#D65656', hover_color = '#B04C4C')
+                self.button_title_stop_time.configure(fg_color = '#D65656', hover_color = '#B04C4C')
 
                 self.button_title_minus_hour.configure(fg_color = '#D65656', hover_color = '#B04C4C')
 
@@ -473,9 +473,9 @@ class App(customtkinter.CTk):
 
                 self.frame_settins_background_under_button_settings.configure(fg_color = '#315A37')
 
-                self.button_title_start.configure(fg_color = '#41904B', hover_color = '#407347')
+                self.button_title_start_time.configure(fg_color = '#41904B', hover_color = '#407347')
 
-                self.button_title_stop.configure(fg_color = '#41904B', hover_color = '#407347')
+                self.button_title_stop_time.configure(fg_color = '#41904B', hover_color = '#407347')
 
                 self.button_title_minus_hour.configure(fg_color = '#41904B', hover_color = '#407347')
 
@@ -511,9 +511,9 @@ class App(customtkinter.CTk):
 
                 self.frame_settins_background_under_button_settings.configure(fg_color = '#61432A')
 
-                self.button_title_start.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+                self.button_title_start_time.configure(fg_color = '#C4834D', hover_color = '#8F623C')
 
-                self.button_title_stop.configure(fg_color = '#C4834D', hover_color = '#8F623C')
+                self.button_title_stop_time.configure(fg_color = '#C4834D', hover_color = '#8F623C')
 
                 self.button_title_minus_hour.configure(fg_color = '#C4834D', hover_color = '#8F623C')
 
@@ -549,9 +549,9 @@ class App(customtkinter.CTk):
 
                 self.frame_settins_background_under_button_settings.configure(fg_color = '#462B64')
 
-                self.button_title_start.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+                self.button_title_start_time.configure(fg_color = '#9250DE', hover_color = '#5B3982')
 
-                self.button_title_stop.configure(fg_color = '#9250DE', hover_color = '#5B3982')
+                self.button_title_stop_time.configure(fg_color = '#9250DE', hover_color = '#5B3982')
 
                 self.button_title_minus_hour.configure(fg_color = '#9250DE', hover_color = '#5B3982')
 
