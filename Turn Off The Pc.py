@@ -223,6 +223,7 @@ class App(customtkinter.CTk):
             self.label_settings_time_for_auto_hibernation.place(x = 40, y = 210)
             self.label_settings_choise_act_after_time.place(x = 40, y = 130)
             self.label_settings_state_auto_hibernation.place(x = 40, y = 170)
+            self.label_settings_version_app.place(x = 40, y = 335)
 
 
             self.button_title_start_time.place(x = 600, y = 600)
@@ -263,18 +264,19 @@ class App(customtkinter.CTk):
 
             self.label_title_designation_hours.place(x = 104, y = 2)
             self.label_title_designaton_minuts.place(x = 92, y = 72)
-            self.label_title_time_out_through.place(x = 272, y = 0)
-            self.label_title_count_time_hours.place(x = 279, y = 10)
-            self.label_title_count_time_minuts.place(x = 279, y = 145)
+            self.label_title_time_out_through.place(x = 283, y = 0)
+            self.label_title_count_time_hours.place(x = 270, y = 25)
+            self.label_title_count_time_minuts.place(x = 270, y = 160)
             self.label_title_unit_time_hours.place(x = 435, y = 119)
             self.label_title_unit_time_minuts.place(x = 435, y = 254)
             self.label_settings_choise_themes_ui.place(x = 700, y = 100)
-            self.label_settings_choise_color_ui.place(x = 700, y = 170)
+            self.label_settings_choise_color_ui.place(x = 700, y = 190)
             self.label_settings_choise_countdown_time.place(x = 700, y = 130)
             # self.label_settings_choise_font_ui.place(x = 700, y = 100)
             self.label_settings_time_for_auto_hibernation.place(x = 700, y = 40)
             self.label_settings_choise_act_after_time.place(x = 700, y = 70)
             self.label_settings_state_auto_hibernation.place(x = 700, y = 10)
+            self.label_settings_version_app.place(x = 700, y = 160)
 
 
             self.button_title_start_time.place(x = 15, y = 155)
@@ -306,10 +308,10 @@ class App(customtkinter.CTk):
 
             if self.value_optionmenu_mode_countdown_time.get() == 'Минутам':
                 self.label_title_designation_hours.place(x = 104, y = 2)
-                self.label_title_designaton_minuts.place(x = 92, y = 72)
+                self.label_title_designaton_minuts.place(x = 94, y = 72)
             else:
                 self.label_title_designation_hours.place(x = 92, y = 2)
-                self.label_title_designaton_minuts.place(x = 89, y = 72)
+                self.label_title_designaton_minuts.place(x = 85, y = 72)
 
 
         def function_choise_themes_ui(value):
@@ -351,40 +353,55 @@ class App(customtkinter.CTk):
                 hover_value = '#3A5B87'
                 button_value = '#346EBA'
                 button_hover_value = '#3A5B87'
+                entry_border_color_value = '#565B5E'
 
             elif value == 'Красный':
                 fg_value = '#C54B4B'
                 hover_value = '#AC4646'
                 button_value = '#C54B4B'
                 button_hover_value = '#AC4646'
-            
+                entry_border_color_value = '#565B5E'
+
             elif value == 'Зеленый':
                 fg_value = '#15963C'
                 hover_value = '#4A8B5E'
                 button_value = '#15963C'
                 button_hover_value = '#4A8B5E'
+                entry_border_color_value = '#565B5E'
 
             elif value == 'Оранжевый':
                 fg_value = '#CC7E1F'
                 hover_value = '#A77441'
                 button_value = '#CC7E1F'
                 button_hover_value = '#A77441'
+                entry_border_color_value = '#565B5E'
 
             elif value == 'Фиолетовый':
                 fg_value = '#9250DE'
                 hover_value = '#5B3982'
                 button_value = '#9250DE'
                 button_hover_value = '#5B3982'
+                entry_border_color_value = '#565B5E'
+
+            elif value == 'Dark+':
+                fg_value = '#1C1C1C'
+                hover_value = '#292929'
+                button_value = '#1C1C1C'
+                button_hover_value = '#292929'
+                entry_border_color_value = '#1C1C1C'
+
 
             self.optionmenu_settings_mode_color_ui.set(value)
 
-            self.checkbox_settings_mode_auto_hibernation.configure(fg_color = fg_value, hover_color = hover_value)
+
+            self.checkbox_settings_mode_auto_hibernation.configure(fg_color = fg_value, hover_color = hover_value, border_width = 2, border_color = entry_border_color_value)
+
+            self.frame_settins_background_under_button_settings.configure(fg_color = fg_value)
+
 
             self.button_title_delay_time.configure(fg_color = fg_value, hover_color = hover_value)
 
             self.button_title_clear_time.configure(fg_color = fg_value, hover_color = hover_value)
-
-            self.frame_settins_background_under_button_settings.configure(fg_color = hover_value)
 
             self.button_title_start_time.configure(fg_color = fg_value, hover_color = hover_value)
 
@@ -404,6 +421,7 @@ class App(customtkinter.CTk):
 
             self.button_settings_save_settings.configure(fg_color = fg_value, hover_color = hover_value)
 
+
             self.optionmenu_settings_mode_themes_ui.configure(fg_color = fg_value, button_color = button_value, button_hover_color = button_hover_value)
 
             self.optionmenu_settings_mode_color_ui.configure(fg_color = fg_value, button_color = button_value, button_hover_color = button_hover_value)
@@ -412,6 +430,12 @@ class App(customtkinter.CTk):
 
             self.optionmenu_settings_mode_act_after_time.configure(fg_color = fg_value, button_color = button_value, button_hover_color = button_hover_value)            
 
+
+            self.entry_title_accept_hours.configure(border_width = 2, border_color = entry_border_color_value)
+
+            self.entry_title_accept_minuts.configure(border_width = 2, border_color = entry_border_color_value)
+
+            self.entry_settings_auto_shutdown.configure(border_width = 2, border_color = entry_border_color_value)
 
             
         def function_choise_countdown_time(value):
@@ -548,51 +572,51 @@ class App(customtkinter.CTk):
 
         # Лейбл в настройках. служит для обозначения состоянии функции авто-гибернация function_auto_hibernation
         self.label_settings_state_auto_hibernation = customtkinter.CTkLabel(self,
-            font = ('Arial', 19),
-            text = 'Авто-гибернация:')
+            font = ('Courier New', 19),
+            text = 'Автогибернация:')
         
         self.label_settings_state_auto_hibernation.place(x = 700, y = 10)
 
         # Лейбл в настройках. служит для обозначения количества секунд до авто-гибернации
         self.label_settings_time_for_auto_hibernation = customtkinter.CTkLabel(self,
-            font = ('Arial', 19),
-            text = 'Секунд до авто-гибернации:')
+            font = ('Courier New', 19),
+            text = 'Автогибернация (с):')
 
         self.label_settings_time_for_auto_hibernation.place(x = 700, y = 40)
 
         # Лейбл в настройках. служит для обозначения выбора действия после истечения времени optionmenu_settings_mode_act_after_time
         self.label_settings_choise_act_after_time = customtkinter.CTkLabel(self,
-            font = ('Arial', 19),
+            font = ('Courier New', 19),
             text = 'Действие:')
         
         self.label_settings_choise_act_after_time.place(x = 700, y = 70)
 
         # Лейбл в настройках. служит для обозначения выбора темы ui
         self.label_settings_choise_themes_ui = customtkinter.CTkLabel(self,
-            font = ('Arial', 19),
+            font = ('Courier New', 19),
             text = 'Тема приложения:')
         
         self.label_settings_choise_themes_ui.place(x = 700, y = 100)
 
         # Лейбл в настройках. служит для обозначения выбора отсчета времени
         self.label_settings_choise_countdown_time = customtkinter.CTkLabel(self,
-            font = ('Arial', 19),
+            font = ('Courier New', 19),
             text = 'Отсчет по:')
         self.label_settings_choise_countdown_time.place(x = 700, y = 130)
 
         # Лейбл в настройках. служит для обозначения выбора цвета ui
         self.label_settings_choise_color_ui = customtkinter.CTkLabel(self,
-            font = ('Arial', 19),
+            font = ('Courier New', 19),
             text = 'Цвет приложения:')
         
-        self.label_settings_choise_color_ui.place(x = 700, y = 170)
+        self.label_settings_choise_color_ui.place(x = 700, y = 190)
 
         # Экспорт значения из optionmenu_settings_mode_auto_hibernation
         self.value_optionmenu_mode_act_after_time = customtkinter.StringVar()
         
         # Меню выбора в настройках. служит для выбора действия после окончания времени function_act_after_time
         self.optionmenu_settings_mode_act_after_time = customtkinter.CTkOptionMenu(self,
-            font = ('Arial', 16),
+            font = ('Courier New', 16),
             values = ['Гибернация', 'Отключение', 'Перезагрузка'],
             width = 150, height = 30, corner_radius = 0,
             fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87',
@@ -601,42 +625,63 @@ class App(customtkinter.CTk):
         
         self.optionmenu_settings_mode_act_after_time.place(x = 700, y = 400)
 
+        # Лейбл на главном экране. служит счетчиком времени для пользователей, то есть показывает то, сколько минут осталось
+        self.label_title_count_time_minuts = customtkinter.CTkLabel(self,
+            font = ('Courier New', 140),
+            text = '00')
+        
+        self.label_title_count_time_minuts.place(x = 270, y = 160)
+
+        # Лейбл на главном экране. служит счетчиком времени для пользователей, то есть показывает то, сколько часов осталось
+        self.label_title_count_time_hours = customtkinter.CTkLabel(self,
+            font = ('Courier New', 140),
+            text = '00')
+        
+        self.label_title_count_time_hours.place(x = 270, y = 25)
+
+        # Фрейм на главном экране. служит задним планом для кнопки button_title_delay_time
+        self.frame_title_background_delay = customtkinter.CTkFrame(self,
+            width = 210, height = 70, corner_radius = 0,
+            fg_color = '#2E2E2E')
+
+        self.frame_title_background_delay.place(x = 250, y = 290)
+
         # Фрейм в главном окне, находится под полями ввода
         self.frame_title_background_left_side = customtkinter.CTkFrame(self,
-            width = 260, height = 440, 
+            width = 260, height = 360, 
             fg_color = '#2E2E2E', corner_radius = 0)
         self.frame_title_background_left_side.place(x = 0, y = 0)
 
         # Фрейм в главном окне, находится под кнопкой "Настройки"
         self.frame_settings_background_under_button_settings = customtkinter.CTkFrame(self, 
-            width = 58, height = 440,
+            width = 56, height = 360,
             fg_color = '#2E2E2E', corner_radius = 0)
         self.frame_settings_background_under_button_settings.place(x = 455, y = 0)
 
         # Фрейм в настройках. служит задним планом для виджетов на левой стороне
         self.frame_settings_background_left_side = customtkinter.CTkFrame(self,
-            width = 30, height = 370, corner_radius = 0,
+            width = 30, height = 360, corner_radius = 0,
             fg_color = '#2E2E2E')
 
         self.frame_settings_background_left_side.place(x = 1150, y = 10)
 
         # Фрейм в настройках. служит задним планом для виджетов в правой стороне
         self.frame_settings_background_right_side = customtkinter.CTkFrame(self,
-            width = 30, height = 370, corner_radius = 0,
+            width = 30, height = 360, corner_radius = 0,
             fg_color = '#2E2E2E')
         
         self.frame_settings_background_right_side.place(x = 1200, y = 10)
 
         # Фрейм в настроках. служит задним планом для кнопки "Закрыть настройки"
         self.frame_settins_background_under_button_settings = customtkinter.CTkFrame(self,
-            width = 58, height = 370, corner_radius = 0,
+            width = 56, height = 360, corner_radius = 0,
             fg_color = "#315A37")
         
         self.frame_settins_background_under_button_settings.place(x = 1250, y = 10)
 
         # # Лейбл в настроках. служит для обозначения выбора шрифта ui
         # self.label_settings_choise_font_ui = customtkinter.CTkLabel(self,
-        #     font = ('Arial', 19),
+        #     font = ('Courier New', 19),
         #     text = 'Шрифт:')
 
         # self.label_settings_choise_font_ui.place(x = 600, y = 260)
@@ -666,7 +711,7 @@ class App(customtkinter.CTk):
 
         # Меню выбора в настройках. служит для выбора темы ui
         self.optionmenu_settings_mode_themes_ui = customtkinter.CTkOptionMenu(self,
-            font = ('Arial', 16),
+            font = ('Courier New', 16),
             values = ['Темная', 'Светлая'],
             width = 150, height = 30, corner_radius = 0,
             fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87',
@@ -680,8 +725,8 @@ class App(customtkinter.CTk):
 
         # Меню выбора в настройках. служит для выбора цвета ui
         self.optionmenu_settings_mode_color_ui = customtkinter.CTkOptionMenu(self,
-            font = ('Arial', 16),
-            values = ['Голубой', 'Красный', 'Зеленый', 'Оранжевый', 'Фиолетовый'],
+            font = ('Courier New', 16),
+            values = ['Голубой', 'Красный', 'Зеленый', 'Оранжевый', 'Фиолетовый', 'Dark+'],
             width = 150, height = 30, corner_radius = 0,
             fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87',
             variable = self.value_optionmenu_mode_color_ui,
@@ -694,7 +739,7 @@ class App(customtkinter.CTk):
 
         # Меню выбора в настройках. служит для выбора отсчета времени
         self.optionmenu_settings_mode_countdown_time = customtkinter.CTkOptionMenu(self,
-            font = ('Arial', 16),
+            font = ('Courier New', 16),
             values = ['Минутам', 'Секундам'],
             width = 150, height = 30, corner_radius = 0,
             fg_color = '#346EBA', button_color = '#346EBA', button_hover_color = '#3A5B87', 
@@ -704,30 +749,9 @@ class App(customtkinter.CTk):
         
         self.optionmenu_settings_mode_countdown_time.place(x = 700, y = 350)
 
-        # Лейбл на главном экране. служит счетчиком времени для пользователей, то есть показывает то, сколько минут осталось
-        self.label_title_count_time_minuts = customtkinter.CTkLabel(self,
-            font = ('Arial', 140, 'bold'),
-            text = '00')
-        
-        self.label_title_count_time_minuts.place(x = 279, y = 145)
-
-        # Лейбл на главном экране. служит счетчиком времени для пользователей, то есть показывает то, сколько часов осталось
-        self.label_title_count_time_hours = customtkinter.CTkLabel(self,
-            font = ('Arial', 140, 'bold'),
-            text = '00')
-        
-        self.label_title_count_time_hours.place(x = 279, y = 10)
-
-        # Лейбл на главном экране. служит задним планом для кнопки button_title_delay_time
-        self.frame_title_background_delay = customtkinter.CTkFrame(self,
-            width = 210, height = 85, corner_radius = 0,
-            fg_color = '#2E2E2E')
-
-        self.frame_title_background_delay.place(x = 250, y = 290)
-
         # Кнопка на главном экране. служит, чтобы откладывать время на 5 минут function_delay_time
         self.button_title_delay_time = customtkinter.CTkButton(self,
-            font = ('Arial', 19),
+            font = ('Courier New', 19),
             text = 'Отложить время',
             width = 185, height = 50, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
@@ -738,8 +762,8 @@ class App(customtkinter.CTk):
 
         # Кнопка на главном экране. служит для очитски полей ввода, лейблов на главном экране function_clear_time
         self.button_title_clear_time = customtkinter.CTkButton(self,
-            font = ('Arial', 23),
-            text = 'Очистить',
+            font = ('Courier New', 19),
+            text = 'Очистить время',
             width = 230, height = 50, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
             state = 'disabled',
@@ -749,7 +773,7 @@ class App(customtkinter.CTk):
 
         # Кнопка на главном экране. служит для запуска таймера function_start_time
         self.button_title_start_time = customtkinter.CTkButton(self,
-            font = ('Arial', 23),
+            font = ('Courier New', 19),
             text = 'Запустить', 
             width = 230, height = 75, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
@@ -759,7 +783,7 @@ class App(customtkinter.CTk):
 
         # Кнопка на главном экране. служит для оставновки таймера function_stop_time
         self.button_title_stop_time = customtkinter.CTkButton(self,
-            font = ('Arial', 23),
+            font = ('Courier New', 19),
             text = 'Остановить', 
             width = 230, height = 50, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
@@ -772,8 +796,8 @@ class App(customtkinter.CTk):
         valid = (self.register(validate), '%P')
 
         self.entry_title_accept_hours = customtkinter.CTkEntry(self,
-            font = ('Arial', 23),
-            width = 150, height = 40, corner_radius = 0, 
+            font = ('Courier New', 23),
+            width = 150, height = 40, corner_radius = 0,
             justify = 'center', 
             validate = 'key',
             validatecommand = valid)
@@ -783,7 +807,7 @@ class App(customtkinter.CTk):
 
         # Поле ввода в настройках. служит для получения количества секунд до авто гибернации
         self.entry_settings_auto_shutdown = customtkinter.CTkEntry(self,
-            font = ('Arial', 23),
+            font = ('Courier New', 23),
             width = 100, corner_radius = 0, 
             justify = 'right',
             validate = 'key',
@@ -795,7 +819,7 @@ class App(customtkinter.CTk):
 
         # Кнопа на главном экране. служит для уменьшения количества часов поля ввода entry_title_accept_hours
         self.button_title_minus_hour = customtkinter.CTkButton(self,
-            font = ('Arial', 24),
+            font = ('Courier New', 24),
             text = '-', 
             width = 40, height = 40, corner_radius = 0,  
             fg_color = '#346EBA', hover_color = '#3A5B87',                   
@@ -805,7 +829,7 @@ class App(customtkinter.CTk):
 
         # Кнопка на главном экране. служит для увеличения количества часов поля ввода entry_title_accept_hours
         self.button_title_plus_hour = customtkinter.CTkButton(self,
-            font = ('Arial', 24),
+            font = ('Courier New', 24),
             text = '+',
             width = 40, height = 40, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',                             
@@ -815,7 +839,7 @@ class App(customtkinter.CTk):
 
         # Лейбл на главном экране. служит для обозначния поля ввода entry_title_accept_hours "часами"
         self.label_title_designation_hours = customtkinter.CTkLabel(self,
-            font = ('Arial', 20),
+            font = ('Courier New', 20),
             text = 'Часы:',
             fg_color = '#2E2E2E')
         
@@ -823,7 +847,7 @@ class App(customtkinter.CTk):
 
         # Поле ввода на главном экране. служит для получения количества минут 
         self.entry_title_accept_minuts = customtkinter.CTkEntry(self,
-            font = ('Arial', 23),
+            font = ('Courier New', 23),
             width = 150, height = 40, corner_radius = 0, 
             justify = 'center', 
             validate = 'key',
@@ -834,7 +858,7 @@ class App(customtkinter.CTk):
 
         # Кнопка на главном экране. служит для уменьшения количества минут поля ввода entry_title_accept_minuts
         self.button_title_minus_minut = customtkinter.CTkButton(self,
-            font = ('Arial', 24),
+            font = ('Courier New', 24),
             text = '-',
             width = 40, height = 40, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
@@ -844,7 +868,7 @@ class App(customtkinter.CTk):
 
         # Кнопка на главном экране. служит для увелечения количества минут поля ввода entry_title_accept_minuts
         self.button_title_plus_minut = customtkinter.CTkButton(self,
-            font = ('Arial', 24),
+            font = ('Courier New', 24),
             text = '+', 
             width = 40, height = 40, corner_radius = 0,
             fg_color = '#346EBA', hover_color = '#3A5B87',
@@ -854,32 +878,39 @@ class App(customtkinter.CTk):
 
         # Лейбл на главном экране. служит для обозначния поля ввода entry_title_accept_minuts "минутами"
         self.label_title_designaton_minuts = customtkinter.CTkLabel(self,
-            font = ('Arial', 20),
+            font = ('Courier New', 20),
             text = 'Минуты:',
             fg_color = '#2E2E2E')
         
-        self.label_title_designaton_minuts.place(x = 92, y = 72)
+        self.label_title_designaton_minuts.place(x = 94, y = 72)
 
         # Лейбл на главном экране. служит для обозначения единицы времени таймера "часами"
         self.label_title_unit_time_hours = customtkinter.CTkLabel(self,
-            font = ('Arial', 18),
+            font = ('Courier New', 18),
             text = 'H')
         
         self.label_title_unit_time_hours.place(x = 435, y = 119)
 
         # Лейбл на главном экране. служит для обозначения единицы времени таймера "минутами"
         self.label_title_unit_time_minuts = customtkinter.CTkLabel(self,
-            font = ('Arial', 18),
+            font = ('Courier New', 18),
             text = 'M')
         
         self.label_title_unit_time_minuts.place(x = 435, y = 254)
 
         # Лейбл на главном экране. Служит для ориентировки пользователя во времени, то есть дает понимает того, сколько времени осталос до дейтсвия
         self.label_title_time_out_through = customtkinter.CTkLabel(self,
-            font = ('Arial', 15), 
-            text = 'Время закончится через:')
+            font = ('Courier New', 15), 
+            text = 'Время закончится \n через:')
         
-        self.label_title_time_out_through.place(x = 272, y = 0)
+        self.label_title_time_out_through.place(x = 283, y = 0)
+
+        # Лейбл на главном экране. Служит для обозначения версии приложения. Размеры окна: 511x360
+        self.label_settings_version_app = customtkinter.CTkLabel(self,
+            font = ('Courier New', 15), 
+            text = 'v 1.2.6')
+        
+        self.label_settings_version_app.place(x = 700, y = 160)
 
         # Поле ввода под главным экраном. служит для ориентировки во времени функции function_stop_time, то есть нужна для оставновки и возобновлении времени в нужной точке
         self.entry_under_title_for_function_stop_time_hours = customtkinter.CTkEntry(self, width = 50)
@@ -890,11 +921,11 @@ class App(customtkinter.CTk):
         self.entry_under_title_for_function_stop_time_minuts.place(x = 10, y = 485)
 
         # Лейбл под главным экраном. служит для определения поля ввода с единицей времени "часы"
-        self.label_for_designation_hours_entry_under_title = customtkinter.CTkLabel(self, text = 'Hours', font = ('Arial', 16))
+        self.label_for_designation_hours_entry_under_title = customtkinter.CTkLabel(self, text = 'Hours', font = ('Courier New', 16))
         self.label_for_designation_hours_entry_under_title.place(x = 70, y = 450)
 
         # Лейбл под главным экраном. служит для определения поля ввода с единицой времени "минуты"
-        self.label_for_designation_minuts_entry_under_title = customtkinter.CTkLabel(self, text = 'Minuts', font = ('Arial', 16))
+        self.label_for_designation_minuts_entry_under_title = customtkinter.CTkLabel(self, text = 'Minuts', font = ('Courier New', 16))
         self.label_for_designation_minuts_entry_under_title.place(x = 70, y = 485)
 
         # Кнопка в настройках. служит для сохранения настроек function_save_settings
@@ -916,6 +947,7 @@ class App(customtkinter.CTk):
             
         function_act_after_time(open_file_optionmenu_mode_act)
 
+        function_shut_settings()
         
         if self.open_file_checkbox_mode_auto_hibernation == 'on':
             self.value_checkbox_mode_auto_hibernation.set('on')
